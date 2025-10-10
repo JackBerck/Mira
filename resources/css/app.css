@@ -8,6 +8,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+    --font-geist: 'Geist', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
@@ -139,5 +142,41 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@utility container {
+    @apply mx-auto max-w-screen-xl;
+}
+
+@layer components {
+    .section-padding-x {
+        @apply px-4 sm:px-4 xl:px-12;
+    }
+
+    .section-padding-y {
+        @apply py-8 sm:py-10 md:py-12;
+    }
+
+    .section-padding {
+        @apply p-8 sm:p-10 md:p-12;
+    }
+
+    .very-small-font-size {
+        @apply text-xs md:text-sm;
+    }
+
+    .leaflet-container {
+        background: #f8f9fa;
+    }
+
+    .leaflet-popup-content {
+        margin: 8px 12px;
+        line-height: 1.4;
+    }
+
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 }

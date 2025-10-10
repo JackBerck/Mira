@@ -1,70 +1,89 @@
+import { AuthShell } from '@/components/auth/auth-layout';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/password/confirm';
 import { Form, Head, Link } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+import { Eye, EyeOff, Shield } from 'lucide-react';
+import { useState } from 'react';
 
 export default function ConfirmPassword() {
-    return (
-        <AuthLayout
-            title="Konfirmasi kata sandi"
-            description="Masukkan kata sandi untuk melanjutkan tindakan sensitif."
-        >
-            <Head title="Konfirmasi kata sandi" />
+    const [showPassword, setShowPassword] = useState(false);
 
-            <Card className="overflow-hidden rounded-2xl border-0 bg-white shadow-xl">
-                <CardContent className="px-8 pt-8">
-                    <Form {...store.form()} resetOnSuccess={['password']}>
-                        {({ processing, errors }) => (
-                            <div className="space-y-5">
-                                <div className="grid gap-2">
-                                    <Label
-                                        htmlFor="password"
-                                        className="text-sm font-medium"
-                                    >
-                                        Kata sandi
-                                    </Label>
+    return (
+        <>
+            <Head title="Konfirmasi Kata Sandi" />
+            <AuthShell
+                title="Konfirmasi kata sandi"
+                description="Demi keamanan, masukkan kembali kata sandi Anda untuk melanjutkan."
+            >
+                <Form
+                    {...store.form()}
+                    resetOnSuccess={['password']}
+                    className="grid gap-4"
+                >
+                    {({ processing, errors }) => (
+                        <>
+                            <div className="grid gap-2">
+                                <Label htmlFor="password">Kata sandi</Label>
+                                <div className="relative">
                                     <Input
                                         id="password"
-                                        type="password"
                                         name="password"
-                                        autoComplete="current-password"
-                                        placeholder="••••••••"
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        }
                                         required
+                                        autoComplete="current-password"
                                         autoFocus
-                                        className="h-11 rounded-lg"
+                                        className="pr-10"
                                     />
                                     <InputError message={errors.password} />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                        ) : (
+                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                        )}
+                                    </Button>
                                 </div>
-
-                                <Button
-                                    type="submit"
-                                    className="mt-2 h-11 w-full rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-base font-medium shadow-md hover:from-indigo-700 hover:to-purple-700"
-                                    disabled={processing}
-                                    data-test="confirm-password-button"
-                                >
-                                    {processing && (
-                                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                                    )}
-                                    {processing ? 'Memeriksa...' : 'Konfirmasi'}
-                                </Button>
                             </div>
-                        )}
-                    </Form>
-                </CardContent>
-                <CardFooter className="flex justify-center bg-gray-50 px-8 pt-4 pb-8">
-                    <Link
-                        href="/login"
-                        className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-                    >
-                        Kembali ke masuk
-                    </Link>
-                </CardFooter>
-            </Card>
-        </AuthLayout>
+
+                            <div className="rounded-md bg-muted/50 p-3">
+                                <p className="text-xs text-muted-foreground">
+                                    <Shield className="mr-1 inline h-3 w-3" />
+                                    Kami memerlukan konfirmasi ini untuk
+                                    melindungi akun Anda dari akses yang tidak
+                                    sah.
+                                </p>
+                            </div>
+
+                            <Button type="submit" disabled={processing}>
+                                {processing ? 'Memproses...' : 'Konfirmasi'}
+                            </Button>
+
+                            <p className="text-center text-sm text-muted-foreground">
+                                Bukan Anda?{' '}
+                                <Link
+                                    href="/auth/login"
+                                    className="font-medium text-foreground underline-offset-4 hover:underline"
+                                >
+                                    Keluar dan ganti akun
+                                </Link>
+                            </p>
+                        </>
+                    )}
+                </Form>
+            </AuthShell>
+        </>
     );
 }
