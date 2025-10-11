@@ -1,10 +1,23 @@
 import { Button } from '@/components/ui/button';
 import navigation from '@/data/navigation';
 import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/react';
+import { User } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function NavigationBar() {
+    const { props } = usePage<{ auth: { user?: User } }>();
+    const user = props.auth?.user;
+
     const pathname =
         typeof window !== 'undefined' ? window.location.pathname : '';
 
@@ -38,19 +51,82 @@ export function NavigationBar() {
                     ))}
                 </div>
 
-                {/* Desktop Buttons */}
-                <div className="hidden items-center gap-2 md:flex">
-                    <Button
-                        asChild
-                        variant="ghost"
-                        className="hidden md:inline-flex"
-                    >
-                        <Link href="/login">Masuk</Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href="/register">Daftar</Link>
-                    </Button>
-                </div>
+                {/* Desktop User Menu */}
+                {user ? (
+                    <div className="hidden items-center gap-2 md:flex">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    className="relative h-8 w-8 rounded-full"
+                                >
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage
+                                            src={`/storage/${user.avatar_url}`}
+                                            alt={user.name}
+                                        />
+                                        <AvatarFallback>
+                                            {user.name
+                                                .split(' ')
+                                                .map((n) => n[0])
+                                                .join('')
+                                                .substring(0, 2)
+                                                .toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end">
+                                <DropdownMenuLabel>
+                                    <div className="flex flex-col space-y-1">
+                                        <p className="text-sm font-medium leading-none">
+                                            {user.name}
+                                        </p>
+                                        <p className="text-xs leading-none text-muted-foreground">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <Link href="/profile">Profil</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/forum">Buka Forum</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/collaboration">
+                                        Buka Kolaborasi
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        href="/logout"
+                                        method="post"
+                                        as="button"
+                                        className="w-full text-left bg-red-600 text-slate-50"
+                                    >
+                                        Keluar
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                ) : (
+                    <div className="hidden items-center gap-2 md:flex">
+                        <Button
+                            asChild
+                            variant="ghost"
+                            className="hidden md:inline-flex"
+                        >
+                            <Link href="/login">Masuk</Link>
+                        </Button>
+                        <Button asChild>
+                            <Link href="/register">Daftar</Link>
+                        </Button>
+                    </div>
+                )}
 
                 {/* Mobile Menu Button */}
                 <div className="flex items-center gap-2 md:hidden">
@@ -94,22 +170,83 @@ export function NavigationBar() {
                                 {item.title}
                             </Link>
                         ))}
-                        <div className="flex flex-col gap-2 pt-2">
-                            <Button
-                                asChild
-                                variant="ghost"
-                                className="justify-start"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <Link href="/login">Masuk</Link>
-                            </Button>
-                            <Button
-                                asChild
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <Link href="/register">Daftar</Link>
-                            </Button>
-                        </div>
+                        {user ? (
+                            <div className="flex flex-col gap-2 pt-2">
+                                <div className="flex items-center gap-2 px-3 py-2">
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage
+                                            src={`/storage/${user.avatar_url}`}
+                                            alt={user.name}
+                                        />
+                                        <AvatarFallback>
+                                            {user.name
+                                                .split(' ')
+                                                .map((n) => n[0])
+                                                .join('')
+                                                .substring(0, 2)
+                                                .toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex flex-col">
+                                        <p className="text-sm font-medium">
+                                            {user.name}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                </div>
+                                <DropdownMenuSeparator />
+                                <Link
+                                    href="/profile"
+                                    className="block rounded-md px-3 py-2 text-base font-medium text-muted-foreground hover:bg-gray-50 hover:text-foreground"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Profil
+                                </Link>
+                                <Link
+                                    href="/forum"
+                                    className="block rounded-md px-3 py-2 text-base font-medium text-muted-foreground hover:bg-gray-50 hover:text-foreground"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Buka Forum
+                                </Link>
+                                <Link
+                                    href="/collaboration"
+                                    className="block rounded-md px-3 py-2 text-base font-medium text-muted-foreground hover:bg-gray-50 hover:text-foreground"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Buka Kolaborasi
+                                </Link>
+                                <DropdownMenuSeparator />
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
+                                    className="block w-full rounded-md px-3 py-2 text-left text-base font-medium bg-red-600 text-slate-50"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Keluar
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-2 pt-2">
+                                <Button
+                                    asChild
+                                    variant="ghost"
+                                    className="justify-start"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <Link href="/login">Masuk</Link>
+                                </Button>
+                                <Button
+                                    asChild
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <Link href="/register">Daftar</Link>
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
