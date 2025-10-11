@@ -45,10 +45,10 @@ export function NavigationBar() {
                         variant="ghost"
                         className="hidden md:inline-flex"
                     >
-                        <Link href="/auth/login">Masuk</Link>
+                        <Link href="/login">Masuk</Link>
                     </Button>
                     <Button asChild>
-                        <Link href="/auth/register">Daftar</Link>
+                        <Link href="/register">Daftar</Link>
                     </Button>
                 </div>
 
@@ -101,13 +101,13 @@ export function NavigationBar() {
                                 className="justify-start"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                <Link href="/auth/login">Masuk</Link>
+                                <Link href="/login">Masuk</Link>
                             </Button>
                             <Button
                                 asChild
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                <Link href="/auth/register">Daftar</Link>
+                                <Link href="/register">Daftar</Link>
                             </Button>
                         </div>
                     </div>

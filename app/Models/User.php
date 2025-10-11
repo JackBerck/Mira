@@ -73,4 +73,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(ForumComment::class);
     }
+
+    public function collaborations()
+    {
+        return $this->hasMany(Collaboration::class);
+    }
+
+    public function collaborators()
+    {
+        return $this->hasMany(Collaborator::class);
+    }
+
+    public function collaborationChats()
+    {
+        return $this->hasMany(CollaborationChat::class);
+    }
+
+    public function ideaInsights()
+    {
+        return $this->hasMany(IdeaInsight::class);
+    }
 }
