@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -24,27 +26,27 @@ class Forum extends Model
         'tags' => 'array',
     ];
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ForumCategory::class, 'forum_category_id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function likes()
+    public function likes(): HasMany
     {
         return $this->hasMany(ForumLike::class);
     }
 
-    public function comments()
+    public function comments(): HasMany
     {
         return $this->hasMany(ForumComment::class);
     }
 
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 

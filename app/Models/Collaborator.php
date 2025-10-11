@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Collaborator extends Model
 {
@@ -12,12 +13,12 @@ class Collaborator extends Model
         'user_id',
     ];
 
-    public function collaboration()
+    public function collaboration(): BelongsTo
     {
         return $this->belongsTo(Collaboration::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
