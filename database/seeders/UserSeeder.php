@@ -2,8 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use function Laravel\Prompts\password;
 
 class UserSeeder extends Seeder
 {
@@ -12,6 +17,20 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        Role::create(['name' => 'admin']);
+        Role::create(['name' => 'user']);
+
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => "admin@example.com",
+            "password" => 'password',
+            "email_verified_at" => Carbon::now(),
+        ]);
+
+        $admin->assignRole('admin');
+
         $users = [
             [
                 'name' => 'Alice Johnson',
@@ -76,7 +95,8 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            \App\Models\User::create($user);
+            $new = User::create($user);
+            $new->assignRole('user');
         }
     }
 }
