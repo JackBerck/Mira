@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            ForumCategorySeeder::class,
+            ForumSeeder::class,
+            ForumCommentSeeder::class,
+            ForumLikeSeeder::class,
         ]);
     }
 }

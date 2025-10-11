@@ -53,6 +53,26 @@ class UserSeeder extends Seeder
                 'portfolio_url' => 'https://diana.dev',
                 'image' => 'profile_images/diana.png',
             ],
+            [
+                'name' => 'Ethan Hunt',
+                'email' => 'ethan@example.com',
+                'password' => 'password',
+                'bio' => 'Secret agent with a flair for espionage and a love for technology.',
+                'skills' => json_encode(['Stealth', 'Hacking', 'Martial Arts']),
+                'interests' => json_encode(['Espionage', 'Technology']),
+                'portfolio_url' => 'https://ethan.dev',
+                'image' => 'profile_images/ethan.png',
+            ],
+            [
+                'name' => 'Fiona Glenanne',
+                'email' => 'fiona@example.com',
+                'password' => 'password',
+                'bio' => 'Ex-IRA operative turned housewife with a talent for improvisation.',
+                'skills' => json_encode(['Strategy', 'Negotiation', 'Combat']),
+                'interests' => json_encode(['Cooking', 'Gardening']),
+                'portfolio_url' => 'https://fiona.dev',
+                'image' => 'profile_images/fiona.png',
+            ],
         ];
 
         foreach ($users as $user) {

@@ -5,7 +5,6 @@ const navigation: NavItem[] = [
     { href: "/forum", title: "Forum" },
     { href: "/kolaborasi", title: "Yuk Kolaborasi" },
     { href: "/berpikir", title: "Mari Berpikir" },
-    { href: "/tentang-kami", title: "Tentang Kami" },
     { href: "/hubungi-kami", title: "Hubungi Kami" },
 ];
 
