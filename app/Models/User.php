@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -61,37 +62,37 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function forums()
+    public function forums(): HasMany
     {
         return $this->hasMany(Forum::class);
     }
 
-    public function forumLikes()
+    public function forumLikes(): HasMany
     {
         return $this->hasMany(ForumLike::class);
     }
 
-    public function forumComments()
+    public function forumComments(): HasMany
     {
         return $this->hasMany(ForumComment::class);
     }
 
-    public function collaborations()
+    public function collaborations(): HasMany
     {
         return $this->hasMany(Collaboration::class);
     }
 
-    public function collaborators()
+    public function collaborators(): HasMany
     {
         return $this->hasMany(Collaborator::class);
     }
 
-    public function collaborationChats()
+    public function collaborationChats(): HasMany
     {
         return $this->hasMany(CollaborationChat::class);
     }
 
-    public function ideaInsights()
+    public function ideaInsights(): HasMany
     {
         return $this->hasMany(IdeaInsight::class);
     }
