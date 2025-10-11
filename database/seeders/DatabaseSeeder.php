@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
             ForumSeeder::class,
             ForumCommentSeeder::class,
             ForumLikeSeeder::class,
+            CollaborationSeeder::class,
+            CollaboratorSeeder::class,
+            CollaborationChatSeeder::class,
         ]);
     }
 }
