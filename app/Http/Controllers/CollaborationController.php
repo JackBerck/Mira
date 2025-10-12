@@ -25,7 +25,9 @@ class CollaborationController extends Controller
 
         // Filter by category
         if ($request->has('category') && $request->category !== 'Semua') {
-            $query->where('forum_category_id', $request->category);
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('name', $request->category);
+            });
         }
 
         // Filter by status
