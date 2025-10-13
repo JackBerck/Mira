@@ -34,4 +34,9 @@ class Collaboration extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function collaborators()
+    {
+        return $this->hasMany(Collaborator::class);
+    }
 }
