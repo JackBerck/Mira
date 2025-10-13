@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Forum;
+use App\Models\ForumCategory;
 use App\Models\Collaboration;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -51,8 +54,12 @@ class HomeController extends Controller
             ];
         });
 
+        // Get sidebar data
+        $sidebarData = $this->getForumSidebarData();
+
         return Inertia::render("dashboard", [
             'forums' => $forums,
+            'sidebar' => $sidebarData,
         ]);
     }
 
@@ -90,8 +97,104 @@ class HomeController extends Controller
             ];
         });
 
+        // Get sidebar data
+        $sidebarData = $this->getCollaborationSidebarData();
+
         return Inertia::render("dashboard-collaborations", [
             'collaborations' => $collaborations,
+            'sidebar' => $sidebarData,
         ]);
+    }
+
+    // Helper: Get Forum Sidebar Data
+    private function getForumSidebarData()
+    {
+        // Popular tags from forums
+        $allTags = Forum::whereNotNull('tags')
+            ->get()
+            ->pluck('tags')
+            ->map(function ($tags) {
+                // Decode JSON if string, ensure array
+                if (is_string($tags)) {
+                    $decoded = json_decode($tags, true);
+                    return is_array($decoded) ? $decoded : [];
+                }
+                return is_array($tags) ? $tags : [];
+            })
+            ->flatten()
+            ->filter(function ($tag) {
+                return !empty($tag) && is_string($tag);
+            })
+            ->countBy()
+            ->sortDesc()
+            ->take(6)
+            ->keys()
+            ->toArray();
+
+        // Trending topics (most discussed forums in last 30 days)
+        $trendingTopics = Forum::with('category')
+            ->withCount(['likes', 'comments'])
+            ->where('created_at', '>=', now()->subDays(30))
+            ->orderByRaw('(likes_count + comments_count) DESC')
+            ->take(3)
+            ->get()
+            ->map(function ($forum) {
+                return [
+                    'title' => $forum->title,
+                    'slug' => $forum->slug,
+                    'count' => $forum->likes_count + $forum->comments_count,
+                ];
+            });
+
+        // Stats
+        $stats = [
+            'totalForums' => Forum::count(),
+            'totalCollaborations' => Collaboration::count(),
+            'totalMembers' => User::count(),
+        ];
+
+        return [
+            'popularTags' => $allTags,
+            'trendingTopics' => $trendingTopics,
+            'stats' => $stats,
+        ];
+    }
+
+    // Helper: Get Collaboration Sidebar Data
+    private function getCollaborationSidebarData()
+    {
+        // Popular categories
+        $popularCategories = ForumCategory::withCount('collaborations')
+            ->having('collaborations_count', '>', 0)
+            ->orderBy('collaborations_count', 'desc')
+            ->take(4)
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                    'count' => $category->collaborations_count,
+                ];
+            });
+
+        // Status counts
+        $statusCounts = [
+            'open' => Collaboration::where('status', 'open')->count(),
+            'in_progress' => Collaboration::where('status', 'in-progress')->count(),
+            'completed' => Collaboration::where('status', 'completed')->count(),
+        ];
+
+        // Stats
+        $stats = [
+            'totalCollaborations' => Collaboration::count(),
+            'activeMembers' => DB::table('collaborators')->distinct('user_id')->count('user_id'),
+            'thisMonth' => Collaboration::where('created_at', '>=', now()->startOfMonth())->count(),
+        ];
+
+        return [
+            'popularCategories' => $popularCategories,
+            'statusCounts' => $statusCounts,
+            'stats' => $stats,
+        ];
     }
 }

@@ -19,6 +19,15 @@ interface PaginatedData<T> {
 
 interface DashboardProps {
     forums: PaginatedData<Forum>;
+    sidebar: {
+        popularTags: string[];
+        trendingTopics: Array<{ title: string; slug: string; count: number }>;
+        stats: {
+            totalForums: number;
+            totalCollaborations: number;
+            totalMembers: number;
+        };
+    };
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -28,7 +37,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Dashboard({ forums: initialForums }: DashboardProps) {
+export default function Dashboard({ forums: initialForums, sidebar }: DashboardProps) {
     const [forums, setForums] = useState<Forum[]>(initialForums.data);
     const [forumsPage, setForumsPage] = useState(initialForums.current_page);
     const [forumsHasMore, setForumsHasMore] = useState(initialForums.current_page < initialForums.last_page);
@@ -126,72 +135,75 @@ export default function Dashboard({ forums: initialForums }: DashboardProps) {
                         </div>
 
                         {/* Right Sidebar - 1/4 width - Info Panel */}
-                        <aside className="lg:w-1/4 space-y-6">
+                        <aside className="lg:w-1/4 space-y-4">
                             {/* Popular Tags */}
-                            <div className="rounded-xl border border-border bg-card p-6 sticky top-4">
-                                <h3 className="text-lg font-semibold mb-4">
+                            <div className="rounded-lg border border-border bg-card p-4 sticky top-4">
+                                <h3 className="text-base font-semibold mb-3">
                                     Popular Tags
                                 </h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {['web-development', 'laravel', 'react', 'database', 'api', 'mobile'].map((tag) => (
-                                        <button
-                                            key={tag}
-                                            className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                                        >
-                                            #{tag}
-                                        </button>
-                                    ))}
-                                </div>
+                                {sidebar?.popularTags && sidebar.popularTags.length > 0 ? (
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {sidebar.popularTags.map((tag, index) => (
+                                            <button
+                                                key={`${tag}-${index}`}
+                                                className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                                            >
+                                                #{tag}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-xs text-muted-foreground">No tags available yet</p>
+                                )}
                             </div>
 
                             {/* Trending Topics */}
-                            <div className="rounded-xl border border-border bg-card p-6">
-                                <h3 className="text-lg font-semibold mb-4">
-                                    Trending Topics
-                                </h3>
-                                <div className="space-y-3">
-                                    {[
-                                        { title: 'Best Practices Laravel 11', count: 234 },
-                                        { title: 'React Server Components', count: 189 },
-                                        { title: 'Database Optimization', count: 156 },
-                                    ].map((topic, index) => (
-                                        <button
-                                            key={index}
-                                            className="flex items-start gap-2 w-full text-left hover:text-primary transition-colors group"
-                                        >
-                                            <span className="text-lg font-bold text-muted-foreground group-hover:text-primary">
-                                                {index + 1}
-                                            </span>
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium leading-tight">
-                                                    {topic.title}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground mt-0.5">
-                                                    {topic.count} discussions
-                                                </p>
-                                            </div>
-                                        </button>
-                                    ))}
+                            {sidebar.trendingTopics && sidebar.trendingTopics.length > 0 && (
+                                <div className="rounded-lg border border-border bg-card p-4">
+                                    <h3 className="text-base font-semibold mb-3">
+                                        Trending Topics
+                                    </h3>
+                                    <div className="space-y-2.5">
+                                        {sidebar.trendingTopics.map((topic, index) => (
+                                            <Link
+                                                key={topic.slug}
+                                                href={`/forum/${topic.slug}`}
+                                                className="flex items-start gap-2 w-full text-left hover:text-primary transition-colors group"
+                                            >
+                                                <span className="text-base font-bold text-muted-foreground group-hover:text-primary min-w-[20px]">
+                                                    {index + 1}
+                                                </span>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium leading-tight line-clamp-2">
+                                                        {topic.title}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                                        {topic.count} interactions
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Quick Stats */}
-                            <div className="rounded-xl border border-border bg-card p-6">
-                                <h3 className="text-lg font-semibold mb-4">
+                            <div className="rounded-lg border border-border bg-card p-4">
+                                <h3 className="text-base font-semibold mb-3">
                                     Community Stats
                                 </h3>
-                                <div className="space-y-3">
+                                <div className="space-y-2.5">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-muted-foreground">Total Forums</span>
-                                        <span className="text-lg font-bold">1,234</span>
+                                        <span className="text-base font-bold">{sidebar.stats.totalForums.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-muted-foreground">Active Collabs</span>
-                                        <span className="text-lg font-bold">89</span>
+                                        <span className="text-base font-bold">{sidebar.stats.totalCollaborations.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-muted-foreground">Members</span>
-                                        <span className="text-lg font-bold">5,678</span>
+                                        <span className="text-base font-bold">{sidebar.stats.totalMembers.toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
