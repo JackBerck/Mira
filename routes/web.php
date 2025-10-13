@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CollaborationController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -9,9 +10,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('beranda', [HomeController::class, 'index'])->name('dashboard');
+    Route::get('beranda/kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
 
     // collaboration
     Route::get('kolaborasi/buat', [CollaborationController::class, 'create'])->name('collaboration.create');
