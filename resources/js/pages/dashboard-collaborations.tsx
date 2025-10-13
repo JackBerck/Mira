@@ -87,39 +87,39 @@ export default function DashboardCollaborations({ collaborations: initialCollabo
                         {/* Left Content - 3/4 width - Scrollable List */}
                         <div className="flex-1 lg:w-3/4">
                             {/* Navigation Tabs */}
-                            <div className="flex items-center justify-between mb-6 border-b border-border">
+                            <div className="flex items-center justify-between mb-4 border-b border-border">
                                 <div className="flex gap-1">
                                     <Link
                                         href="/beranda"
-                                        className="px-6 py-3 text-base font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border transition-colors"
+                                        className="px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border transition-colors"
                                     >
                                         <ArrowLeft className="inline-block mr-2 h-4 w-4" />
                                         Forum
                                     </Link>
-                                    <button className="px-6 py-3 text-base font-medium border-b-2 border-primary text-primary">
+                                    <button className="px-5 py-2.5 text-sm font-medium border-b-2 border-primary text-primary">
                                         Collaboration ({initialCollaborations.total})
                                     </button>
                                 </div>
                             </div>
 
                             {/* Collaboration List with Infinite Scroll */}
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <InfiniteScroll
                                     dataLength={collabs.length}
                                     next={loadMoreCollabs}
                                     hasMore={collabsHasMore}
                                     loader={
-                                        <div className="flex justify-center py-8">
-                                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                        <div className="flex justify-center py-6">
+                                            <Loader2 className="h-7 w-7 animate-spin text-primary" />
                                         </div>
                                     }
                                     endMessage={
-                                        <div className="text-center py-8 text-muted-foreground">
+                                        <div className="text-center py-6 text-muted-foreground">
                                             <p className="text-sm">No more collaborations to load</p>
                                         </div>
                                     }
                                 >
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         {collabs.map((collab) => (
                                             <CollabListItem key={collab.id} collab={collab} />
                                         ))}

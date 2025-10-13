@@ -84,14 +84,14 @@ export default function Dashboard({ forums: initialForums }: DashboardProps) {
                         {/* Left Content - 3/4 width - Scrollable List */}
                         <div className="flex-1 lg:w-3/4">
                             {/* Navigation Tabs */}
-                            <div className="flex items-center justify-between mb-6 border-b border-border">
+                            <div className="flex items-center justify-between mb-4 border-b border-border">
                                 <div className="flex gap-1">
-                                    <button className="px-6 py-3 text-base font-medium border-b-2 border-primary text-primary">
+                                    <button className="px-5 py-2.5 text-sm font-medium border-b-2 border-primary text-primary">
                                         Forum ({initialForums.total})
                                     </button>
                                     <Link
                                         href="/beranda/kolaborasi"
-                                        className="px-6 py-3 text-base font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border transition-colors"
+                                        className="px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border transition-colors"
                                     >
                                         Collaboration
                                         <ArrowRight className="inline-block ml-2 h-4 w-4" />
@@ -100,23 +100,23 @@ export default function Dashboard({ forums: initialForums }: DashboardProps) {
                             </div>
 
                             {/* Forum List with Infinite Scroll */}
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <InfiniteScroll
                                     dataLength={forums.length}
                                     next={loadMoreForums}
                                     hasMore={forumsHasMore}
                                     loader={
-                                        <div className="flex justify-center py-8">
-                                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                        <div className="flex justify-center py-6">
+                                            <Loader2 className="h-7 w-7 animate-spin text-primary" />
                                         </div>
                                     }
                                     endMessage={
-                                        <div className="text-center py-8 text-muted-foreground">
+                                        <div className="text-center py-6 text-muted-foreground">
                                             <p className="text-sm">No more forums to load</p>
                                         </div>
                                     }
                                 >
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         {forums.map((forum) => (
                                             <ForumListItem key={forum.id} forum={forum} />
                                         ))}
