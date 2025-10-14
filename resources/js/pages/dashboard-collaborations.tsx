@@ -18,6 +18,19 @@ interface PaginatedData<T> {
 
 interface DashboardCollaborationsProps {
     collaborations: PaginatedData<Collab>;
+    sidebar: {
+        popularCategories: Array<{ name: string; slug: string; count: number }>;
+        statusCounts: {
+            open: number;
+            in_progress: number;
+            completed: number;
+        };
+        stats: {
+            totalCollaborations: number;
+            activeMembers: number;
+            thisMonth: number;
+        };
+    };
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -31,7 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function DashboardCollaborations({ collaborations: initialCollaborations }: DashboardCollaborationsProps) {
+export default function DashboardCollaborations({ collaborations: initialCollaborations, sidebar }: DashboardCollaborationsProps) {
     const [collabs, setCollabs] = useState<Collab[]>(initialCollaborations.data);
     const [collabsPage, setCollabsPage] = useState(initialCollaborations.current_page);
     const [collabsHasMore, setCollabsHasMore] = useState(initialCollaborations.current_page < initialCollaborations.last_page);
@@ -87,39 +100,39 @@ export default function DashboardCollaborations({ collaborations: initialCollabo
                         {/* Left Content - 3/4 width - Scrollable List */}
                         <div className="flex-1 lg:w-3/4">
                             {/* Navigation Tabs */}
-                            <div className="flex items-center justify-between mb-6 border-b border-border">
+                            <div className="flex items-center justify-between mb-4 border-b border-border">
                                 <div className="flex gap-1">
                                     <Link
                                         href="/beranda"
-                                        className="px-6 py-3 text-base font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border transition-colors"
+                                        className="px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground hover:border-border transition-colors"
                                     >
                                         <ArrowLeft className="inline-block mr-2 h-4 w-4" />
                                         Forum
                                     </Link>
-                                    <button className="px-6 py-3 text-base font-medium border-b-2 border-primary text-primary">
+                                    <button className="px-5 py-2.5 text-sm font-medium border-b-2 border-primary text-primary">
                                         Collaboration ({initialCollaborations.total})
                                     </button>
                                 </div>
                             </div>
 
                             {/* Collaboration List with Infinite Scroll */}
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <InfiniteScroll
                                     dataLength={collabs.length}
                                     next={loadMoreCollabs}
                                     hasMore={collabsHasMore}
                                     loader={
-                                        <div className="flex justify-center py-8">
-                                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                        <div className="flex justify-center py-6">
+                                            <Loader2 className="h-7 w-7 animate-spin text-primary" />
                                         </div>
                                     }
                                     endMessage={
-                                        <div className="text-center py-8 text-muted-foreground">
+                                        <div className="text-center py-6 text-muted-foreground">
                                             <p className="text-sm">No more collaborations to load</p>
                                         </div>
                                     }
                                 >
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         {collabs.map((collab) => (
                                             <CollabListItem key={collab.id} collab={collab} />
                                         ))}
@@ -129,67 +142,77 @@ export default function DashboardCollaborations({ collaborations: initialCollabo
                         </div>
 
                         {/* Right Sidebar - 1/4 width - Info Panel */}
-                        <aside className="lg:w-1/4 space-y-6">
+                        <aside className="lg:w-1/4 space-y-4">
                             {/* Popular Categories */}
-                            <div className="rounded-xl border border-border bg-card p-6 sticky top-4">
-                                <h3 className="text-lg font-semibold mb-4">
-                                    Popular Categories
-                                </h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {['Teknologi', 'Sosial', 'Kreatif', 'Lingkungan'].map((category) => (
-                                        <button
-                                            key={category}
-                                            className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                                        >
-                                            {category}
-                                        </button>
-                                    ))}
+                            {sidebar.popularCategories && sidebar.popularCategories.length > 0 && (
+                                <div className="rounded-lg border border-border bg-card p-4 sticky top-4">
+                                    <h3 className="text-base font-semibold mb-3">
+                                        Popular Categories
+                                    </h3>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {sidebar.popularCategories.map((category) => (
+                                            <button
+                                                key={category.slug}
+                                                className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                                            >
+                                                {category.name}
+                                                <span className="ml-1.5 text-[10px] opacity-70">({category.count})</span>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Status Filter */}
-                            <div className="rounded-xl border border-border bg-card p-6">
-                                <h3 className="text-lg font-semibold mb-4">
+                            <div className="rounded-lg border border-border bg-card p-4">
+                                <h3 className="text-base font-semibold mb-3">
                                     By Status
                                 </h3>
-                                <div className="space-y-2">
-                                    {[
-                                        { status: 'Open', count: 45, color: 'text-green-600' },
-                                        { status: 'In Progress', count: 23, color: 'text-blue-600' },
-                                        { status: 'Completed', count: 67, color: 'text-gray-600' },
-                                    ].map((item) => (
-                                        <button
-                                            key={item.status}
-                                            className="flex items-center justify-between w-full text-left hover:bg-muted px-3 py-2 rounded-md transition-colors group"
-                                        >
-                                            <span className={`text-sm font-medium ${item.color}`}>
-                                                {item.status}
-                                            </span>
-                                            <span className="text-sm text-muted-foreground">
-                                                {item.count}
-                                            </span>
-                                        </button>
-                                    ))}
+                                <div className="space-y-1.5">
+                                    <button className="flex items-center justify-between w-full text-left hover:bg-muted px-2.5 py-1.5 rounded-md transition-colors group">
+                                        <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                                            Open
+                                        </span>
+                                        <span className="text-sm text-muted-foreground">
+                                            {sidebar.statusCounts.open}
+                                        </span>
+                                    </button>
+                                    <button className="flex items-center justify-between w-full text-left hover:bg-muted px-2.5 py-1.5 rounded-md transition-colors group">
+                                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                            In Progress
+                                        </span>
+                                        <span className="text-sm text-muted-foreground">
+                                            {sidebar.statusCounts.in_progress}
+                                        </span>
+                                    </button>
+                                    <button className="flex items-center justify-between w-full text-left hover:bg-muted px-2.5 py-1.5 rounded-md transition-colors group">
+                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                            Completed
+                                        </span>
+                                        <span className="text-sm text-muted-foreground">
+                                            {sidebar.statusCounts.completed}
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
 
                             {/* Quick Stats */}
-                            <div className="rounded-xl border border-border bg-card p-6">
-                                <h3 className="text-lg font-semibold mb-4">
+                            <div className="rounded-lg border border-border bg-card p-4">
+                                <h3 className="text-base font-semibold mb-3">
                                     Collaboration Stats
                                 </h3>
-                                <div className="space-y-3">
+                                <div className="space-y-2.5">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-muted-foreground">Total Projects</span>
-                                        <span className="text-lg font-bold">{initialCollaborations.total}</span>
+                                        <span className="text-base font-bold">{sidebar.stats.totalCollaborations.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-muted-foreground">Active Members</span>
-                                        <span className="text-lg font-bold">234</span>
+                                        <span className="text-base font-bold">{sidebar.stats.activeMembers.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-muted-foreground">This Month</span>
-                                        <span className="text-lg font-bold">+12</span>
+                                        <span className="text-base font-bold">+{sidebar.stats.thisMonth.toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
