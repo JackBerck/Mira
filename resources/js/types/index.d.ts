@@ -41,3 +41,13 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface IdeaInsight {
+    id: number;
+    user_id: number;
+    message: string;
+    is_ai_generated: boolean;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown; // This allows for additional properties...
+}

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Collaboration extends Model
 {
@@ -32,5 +33,35 @@ class Collaboration extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function collaborators()
+    {
+        return $this->hasMany(Collaborator::class);
+    }
+
+    public function chats()
+    {
+        return $this->hasMany(CollaborationChat::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($collaboration) {
+            if (empty($collaboration->slug)) {
+                $baseSlug = Str::slug($collaboration->title);
+                $slug = $baseSlug;
+                $count = 1;
+
+                // Pastikan slug unik
+                while (self::where('slug', $slug)->exists()) {
+                    $slug = $baseSlug . '-' . $count++;
+                }
+
+                $collaboration->slug = $slug;
+            }
+        });
     }
 }
