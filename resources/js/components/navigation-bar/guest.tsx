@@ -68,6 +68,12 @@ export default function GuestNavbar() {
                                 {item.title}
                             </Link>
                         ))}
+                        <Link
+                            href="/register"
+                            className="block rounded border-l-4 border-transparent bg-blue-600 py-2 pr-4 pl-3 text-base font-medium text-gray-500 text-white hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
+                        >
+                            Join Now
+                        </Link>
                     </div>
                 </div>
             )}
