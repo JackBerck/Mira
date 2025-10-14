@@ -6,9 +6,10 @@ use App\Http\Controllers\IdeaInsightController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Introduction / Landing Page
 Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+    return Inertia::render('Introduction/Welcome');
+})->name('welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('beranda', [HomeController::class, 'index'])->name('dashboard');
