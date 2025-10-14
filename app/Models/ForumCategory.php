@@ -15,6 +15,11 @@ class ForumCategory extends Model
         return $this->hasMany(Forum::class, 'forum_category_id');
     }
 
+    public function collaborations(): HasMany
+    {
+        return $this->hasMany(Collaboration::class, 'forum_category_id');
+    }
+
     protected static function boot(): void
     {
         parent::boot();
