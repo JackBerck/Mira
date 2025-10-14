@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/react"
 
-export function Footer() {
+export default function Footer() {
   return (
     <footer className="border-t bg-background section-padding-x ">
       <div className="container grid gap-8 py-10 md:grid-cols-4 max-w-screen-xl">

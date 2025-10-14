@@ -1,13 +1,14 @@
+import { introductionNavigation } from '@/data/navigation';
+import { Link } from '@inertiajs/react';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from '@inertiajs/react';
 
 export default function GuestNavbar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <nav className="fixed top-0 z-50 w-full bg-white shadow-sm">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <nav className="section-padding-x fixed top-0 z-50 w-full bg-white shadow-sm">
+            <div className="container max-w-screen-xl">
                 <div className="flex h-16 justify-between">
                     <div className="flex items-center">
                         <div className="flex flex-shrink-0 items-center">
@@ -19,30 +20,15 @@ export default function GuestNavbar() {
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <Link
-                                href="/"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700"
-                            >
-                                Home
-                            </Link>
-                            <Link
-                                href="/features"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700"
-                            >
-                                Features
-                            </Link>
-                            <Link
-                                href="/about"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700"
-                            >
-                                About
-                            </Link>
-                            <Link
-                                href="/contact"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700"
-                            >
-                                Contact
-                            </Link>
+                            {introductionNavigation.map((item, index) => (
+                                <Link
+                                    key={index}
+                                    href={item.href}
+                                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700"
+                                >
+                                    {item.title}
+                                </Link>
+                            ))}
                         </div>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -73,39 +59,18 @@ export default function GuestNavbar() {
             {isOpen && (
                 <div className="sm:hidden">
                     <div className="space-y-1 pt-2 pb-3">
-                        <Link
-                            href="/"
-                            className="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
-                        >
-                            Home
-                        </Link>
-                        <Link
-                            href="/features"
-                            className="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
-                        >
-                            Features
-                        </Link>
-                        <Link
-                            href="/about"
-                            className="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
-                        >
-                            About
-                        </Link>
-                        <Link
-                            href="/contact"
-                            className="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
-                        >
-                            Contact
-                        </Link>
-                        <Link
-                            href="/login"
-                            className="block border-l-4 border-transparent bg-blue-50 py-2 pr-4 pl-3 text-base font-medium text-blue-600"
-                        >
-                            Join Now
-                        </Link>
+                        {introductionNavigation.map((item, index) => (
+                            <Link
+                                key={index}
+                                href={item.href}
+                                className="block border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
+                            >
+                                {item.title}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             )}
         </nav>
     );
-};
+}

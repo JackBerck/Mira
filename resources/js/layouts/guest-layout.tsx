@@ -1,4 +1,4 @@
-import { Footer } from '@/components/footer';
+import GuestFooter from '@/components/footer/guest';
 import GuestNavbar from '@/components/navigation-bar/guest';
 
 export default function GuestLayout({
@@ -10,7 +10,7 @@ export default function GuestLayout({
         <>
             <GuestNavbar />
             {children}
-            <Footer />
+            <GuestFooter />
         </>
     );
 }

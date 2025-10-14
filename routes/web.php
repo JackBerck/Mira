@@ -8,8 +8,18 @@ use Inertia\Inertia;
 
 // Introduction / Landing Page
 Route::get('/', function () {
-    return Inertia::render('Introduction/Welcome');
+    return Inertia::render('introduction/welcome');
 })->name('welcome');
+Route::get('/fitur', function () {
+    return Inertia::render('introduction/features');
+})->name('features');
+Route::get('/tentang', function () {
+    return Inertia::render('introduction/about');
+})->name('about');
+Route::get('/kontak', function () {
+    return Inertia::render('introduction/contact');
+})->name('contact');
+Route::post('/kontak', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('beranda', [HomeController::class, 'index'])->name('dashboard');
@@ -35,5 +45,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');
 Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
