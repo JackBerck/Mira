@@ -3,18 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class ForumCategory extends Model
 {
     protected $fillable = ['name', 'slug'];
 
-    public function forums()
+    public function forums(): HasMany
     {
         return $this->hasMany(Forum::class, 'forum_category_id');
     }
 
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 

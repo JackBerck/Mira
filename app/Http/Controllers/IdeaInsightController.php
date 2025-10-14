@@ -24,7 +24,7 @@ class IdeaInsightController extends Controller
     public function index()
     {
         $userIdeaChat = IdeaInsight::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         return Inertia::render('idea-insight', [

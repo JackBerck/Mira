@@ -1,5 +1,7 @@
 <?php
-// filepath: d:\Code\Mira\routes\web.php
+
+use App\Http\Controllers\CollaborationController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IdeaInsightController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -9,9 +11,14 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('beranda', [HomeController::class, 'index'])->name('dashboard');
+    Route::get('beranda/kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
+
+    // collaboration
+    Route::get('kolaborasi/buat', [CollaborationController::class, 'create'])->name('collaboration.create');
+    Route::post('kolaborasi', [CollaborationController::class, 'store'])->name('collaboration.store');
+    Route::put('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'update'])->name('collaboration.update');
+    Route::delete('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'destroy'])->name('collaboration.destroy');
 
     // Mari Berpikir / Idea Insight
     Route::get('mari-berpikir', [IdeaInsightController::class, 'index'])->name('idea-insight');
@@ -21,10 +28,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/chat', [IdeaInsightController::class, 'chat']);
         Route::post('/export', [IdeaInsightController::class, 'export']);
     });
-
-    // Forum Routes
-    // Collaboration Routes
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+// Collaboration Routes
+Route::get('kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');
+Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
+
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
