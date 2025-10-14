@@ -1,9 +1,5 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import navigation from '@/data/navigation';
-import { cn } from '@/lib/utils';
-import { User } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +8,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { navigation } from '@/data/navigation';
+import { cn } from '@/lib/utils';
+import { User } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 export function NavigationBar() {
     const { props } = usePage<{ auth: { user?: User } }>();
@@ -79,7 +79,7 @@ export function NavigationBar() {
                             <DropdownMenuContent className="w-56" align="end">
                                 <DropdownMenuLabel>
                                     <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">
+                                        <p className="text-sm leading-none font-medium">
                                             {user.name}
                                         </p>
                                         <p className="text-xs leading-none text-muted-foreground">
@@ -105,7 +105,7 @@ export function NavigationBar() {
                                         href="/logout"
                                         method="post"
                                         as="button"
-                                        className="w-full text-left bg-red-600 text-slate-50"
+                                        className="w-full bg-red-600 text-left text-slate-50"
                                     >
                                         Keluar
                                     </Link>
@@ -223,7 +223,7 @@ export function NavigationBar() {
                                     href="/logout"
                                     method="post"
                                     as="button"
-                                    className="block w-full rounded-md px-3 py-2 text-left text-base font-medium bg-red-600 text-slate-50"
+                                    className="block w-full rounded-md bg-red-600 px-3 py-2 text-left text-base font-medium text-slate-50"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Keluar
