@@ -1,7 +1,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import Layout from '@/layouts';
-import { usePage } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
+import { Link, usePage } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 
 interface Collaborator {
     id: number;
@@ -60,8 +61,17 @@ export default function CollabDetailPage() {
     }[collaboration.status];
 
     return (
-        <Layout>
+        <AppLayout>
             <main className="container mx-auto space-y-8 px-4 py-8">
+                {/* Back Navigation */}
+                <Link
+                    href="/beranda/kolaborasi"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Kembali ke Kolaborasi
+                </Link>
+
                 <header className="space-y-2">
                     <div className="flex items-center gap-2">
                         <Badge variant="secondary">
@@ -114,15 +124,17 @@ export default function CollabDetailPage() {
                                 {collaboration.skills_needed &&
                                 Array.isArray(collaboration.skills_needed) &&
                                 collaboration.skills_needed.length > 0 ? (
-                                    collaboration.skills_needed.map((s, index) => (
-                                        <Badge
-                                            key={`${s}-${index}`}
-                                            variant="outline"
-                                            className="bg-background"
-                                        >
-                                            {s}
-                                        </Badge>
-                                    ))
+                                    collaboration.skills_needed.map(
+                                        (s, index) => (
+                                            <Badge
+                                                key={`${s}-${index}`}
+                                                variant="outline"
+                                                className="bg-background"
+                                            >
+                                                {s}
+                                            </Badge>
+                                        ),
+                                    )
                                 ) : (
                                     <p className="text-sm text-muted-foreground">
                                         Belum ada keahlian yang ditentukan
@@ -137,7 +149,8 @@ export default function CollabDetailPage() {
                                     Aktivitas Terbaru
                                 </h2>
                                 <p className="text-sm text-muted-foreground">
-                                    {collaboration.chats_count} diskusi dalam kolaborasi ini
+                                    {collaboration.chats_count} diskusi dalam
+                                    kolaborasi ini
                                 </p>
                             </div>
                         )}
@@ -207,7 +220,8 @@ export default function CollabDetailPage() {
 
                         <div className="space-y-3">
                             <h3 className="font-semibold">
-                                Tim Kolaborasi ({collaboration.collaborators_count})
+                                Tim Kolaborasi (
+                                {collaboration.collaborators_count})
                             </h3>
                             {collaboration.collaborators &&
                             collaboration.collaborators.length > 0 ? (
@@ -262,6 +276,6 @@ export default function CollabDetailPage() {
                     </aside>
                 </section>
             </main>
-        </Layout>
+        </AppLayout>
     );
 }

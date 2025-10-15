@@ -197,6 +197,17 @@ class CollaborationController extends Controller
 
     public function destroy(Collaboration $collaboration): \Illuminate\Http\RedirectResponse
     {
+        // Check if user is owner or admin
+        $user = auth()->user();
+        
+        if (!$user) {
+            abort(401, 'Unauthorized');
+        }
+        
+        if ($collaboration->user_id !== $user->id && !$user->hasRole('admin')) {
+            abort(403, 'Anda tidak memiliki izin untuk menghapus kolaborasi ini.');
+        }
+
         $collaboration->delete();
 
         return redirect()->route('collaboration.index')

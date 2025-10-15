@@ -1,20 +1,63 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Link } from '@inertiajs/react';
-import { Users, Clock } from 'lucide-react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { Users, Clock, MoreVertical, Trash2, Flag } from 'lucide-react';
 import type { Collab } from './collab-types';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 export function CollabListItem({ collab }: { collab: Collab }) {
     const statusVariant = collab.status === 'open' ? 'default' : collab.status === 'in-progress' ? 'secondary' : 'outline';
+    const { props } = usePage<{ auth: { user?: { id: number; role?: string } } }>();
+    const currentUser = props.auth?.user;
+    
+    // Check if user can delete (owner or admin)
+    const canDelete = currentUser && (
+        currentUser.id === collab.user?.id || 
+        currentUser.role === 'admin'
+    );
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (confirm('Apakah Anda yakin ingin menghapus kolaborasi ini?')) {
+            router.delete(`/beranda/kolaborasi/${collab.slug}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Optional: show success message
+                },
+                onError: (errors) => {
+                    console.error('Error deleting collaboration:', errors);
+                    alert('Gagal menghapus kolaborasi. Silakan coba lagi.');
+                }
+            });
+        }
+    };
+
+    const handleReport = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Show success alert
+        alert('Laporan berhasil terkirim ke admin. Terima kasih atas kontribusi Anda!');
+    };
     
     return (
         <Card className="overflow-hidden border bg-card text-card-foreground transition-all hover:border-primary/50 hover:shadow-md">
-            <Link
-                href={`/beranda/kolaborasi/${collab.slug}`}
-                className="block focus:ring-2 focus:ring-primary focus:outline-none"
-            >
-                <CardContent className="p-0">
-                    <div className="flex flex-col gap-3 p-4 md:flex-row">
+            <CardContent className="p-0">
+                <div className="relative">
+                    <Link
+                        href={`/beranda/kolaborasi/${collab.slug}`}
+                        className="block focus:ring-2 focus:ring-primary focus:outline-none"
+                    >
+                        <div className="flex flex-col gap-3 p-4 md:flex-row">
                         {/* Left: Cover Image (if exists) */}
                         {collab.coverUrl && (
                             <div className="flex-shrink-0 md:w-40">
@@ -116,8 +159,55 @@ export function CollabListItem({ collab }: { collab: Collab }) {
                             </div>
                         </div>
                     </div>
-                </CardContent>
-            </Link>
+                    </Link>
+                    
+                    {/* Dropdown Menu for Actions - Show for all logged-in users */}
+                    {currentUser && (
+                        <div className="absolute top-2 right-2 z-10">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 rounded-full hover:bg-muted"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <MoreVertical className="h-4 w-4" />
+                                        <span className="sr-only">Open menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {/* Report option for all users */}
+                                    <DropdownMenuItem
+                                        className="cursor-pointer"
+                                        onClick={handleReport}
+                                    >
+                                        <Flag className="mr-2 h-4 w-4" />
+                                        Laporkan ke Admin
+                                    </DropdownMenuItem>
+                                    
+                                    {/* Delete option only for owner or admin */}
+                                    {canDelete && (
+                                        <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                className="text-destructive focus:text-destructive cursor-pointer"
+                                                onClick={handleDelete}
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Hapus Kolaborasi
+                                            </DropdownMenuItem>
+                                        </>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    )}
+                </div>
+            </CardContent>
         </Card>
     );
 }

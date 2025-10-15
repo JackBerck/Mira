@@ -8,31 +8,40 @@ use App\Http\Controllers\IdeaInsightController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Introduction / Landing Page
-Route::get('/', function () {
-    return Inertia::render('introduction/welcome');
-})->name('welcome');
-Route::get('/fitur', function () {
-    return Inertia::render('introduction/features');
-})->name('features');
-Route::get('/tentang', function () {
-    return Inertia::render('introduction/about');
-})->name('about');
-Route::get('/kontak', function () {
-    return Inertia::render('introduction/contact');
-})->name('contact');
-Route::post('/kontak', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
+Route::middleware('guest')->group(function () {
+    // Introduction / Landing Page
+    Route::get('/', function () {
+        return Inertia::render('introduction/welcome');
+    })->name('welcome');
+    Route::get('/fitur', function () {
+        return Inertia::render('introduction/features');
+    })->name('features');
+    Route::get('/tentang', function () {
+        return Inertia::render('introduction/about');
+    })->name('about');
+    Route::get('/kontak', function () {
+        return Inertia::render('introduction/contact');
+    })->name('contact');
+    Route::post('/kontak', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('beranda', [HomeController::class, 'index'])->name('dashboard');
-    Route::get('beranda/kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
-    Route::get('beranda/kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
+});
 
+Route::resource("test",CollaborationController::class);
+
+Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('dashboard');
     // collaboration
+    
+    Route::get('kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
     Route::get('kolaborasi/buat', [CollaborationController::class, 'create'])->name('collaboration.create');
     Route::post('kolaborasi', [CollaborationController::class, 'store'])->name('collaboration.store');
+    Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
     Route::put('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'update'])->name('collaboration.update');
     Route::delete('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'destroy'])->name('collaboration.destroy');
+
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // forum
     Route::get('forum/buat', [ForumController::class, 'create'])->name('forum.buat');

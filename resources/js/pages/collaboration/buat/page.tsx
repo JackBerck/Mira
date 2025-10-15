@@ -1,5 +1,5 @@
 import { CollabForm } from '@/components/collab/collab-form';
-import Layout from '@/layouts';
+import AppLayout from '@/layouts/app-layout';
 import { usePage } from '@inertiajs/react';
 
 interface Category {
@@ -15,7 +15,7 @@ export default function NewCollabPage() {
     const { categories } = usePage<PageProps>().props;
 
     return (
-        <Layout>
+        <AppLayout>
             <main className="container mx-auto space-y-6 px-4 py-8">
                 <header className="space-y-1">
                     <h1 className="text-2xl font-semibold">
@@ -30,6 +30,6 @@ export default function NewCollabPage() {
                     <CollabForm categories={categories} />
                 </section>
             </main>
-        </Layout>
+        </AppLayout>
     );
 }

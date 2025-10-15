@@ -195,7 +195,7 @@ export function TopNavbar() {
                 {/* Right Section */}
                 <div className="flex items-center space-x-2">
                     {/* Write Button */}
-                    <Link href="/write">
+                    <Link href="/forum/buat">
                         <Button
                             variant="ghost"
                             size="sm"
