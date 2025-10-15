@@ -39,12 +39,8 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
     Route::put('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'update'])->name('collaboration.update');
     Route::delete('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'destroy'])->name('collaboration.destroy');
 
-});
-
-Route::middleware(['auth', 'verified'])->group(function () {
-
     // forum
-    Route::get('forum/buat', [ForumController::class, 'create'])->name('forum.buat');
+    Route::get('forum/buat', [ForumController::class, 'create'])->name('forum.create');
     Route::get('forum/{forum:slug}', [ForumController::class, 'show'])->name('forum.show');
     Route::post('forum', [ForumController::class, 'store'])->name('forum.store');
     Route::get('forum/{forum:slug}/edit', [ForumController::class, 'edit'])->name('forum.edit');
@@ -52,6 +48,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('forum/{forum:slug}', [ForumController::class, 'destroy'])->name('forum.destroy');
     Route::post('forum/{forum:id}/like', [ForumInteractionController::class, 'toggleLike'])->name('forum.like');
     Route::post('forum/{forum:id}/comment', [ForumInteractionController::class, 'storeComment'])->name('forum.comment');
+
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Mari Berpikir / Idea Insight
     Route::get('mari-berpikir', [IdeaInsightController::class, 'index'])->name('idea-insight');

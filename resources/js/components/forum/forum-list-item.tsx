@@ -27,7 +27,7 @@ export function ForumListItem({ forum }: { forum: Forum }) {
         e.stopPropagation();
         
         if (confirm('Apakah Anda yakin ingin menghapus forum ini?')) {
-            router.delete(`/forum/${forum.slug}`, {
+            router.delete(`/beranda/forum/${forum.slug}`, {
                 preserveScroll: true,
                 onSuccess: () => {
                     // Optional: show success message
@@ -53,7 +53,7 @@ export function ForumListItem({ forum }: { forum: Forum }) {
             <CardContent className="p-0">
                 <div className="relative">
                     <Link
-                        href={`/forum/${forum.slug}`}
+                        href={`/beranda/forum/${forum.slug}`}
                         className="block focus:ring-2 focus:ring-primary focus:outline-none"
                     >
                         <div className="flex flex-col md:flex-row gap-3 p-4">

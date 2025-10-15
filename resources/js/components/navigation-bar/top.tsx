@@ -85,7 +85,7 @@ export function TopNavbar() {
 
                     {/* Logo - Show when sidebar is collapsed or on mobile */}
                     <Link
-                        href="/dashboard"
+                        href="/"
                         className="hidden items-center space-x-2 lg:flex"
                     >
                         <img
@@ -195,7 +195,7 @@ export function TopNavbar() {
                 {/* Right Section */}
                 <div className="flex items-center space-x-2">
                     {/* Write Button */}
-                    <Link href="/forum/buat">
+                    <Link href="/beranda/forum/buat">
                         <Button
                             variant="ghost"
                             size="sm"

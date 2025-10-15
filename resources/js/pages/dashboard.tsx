@@ -167,7 +167,7 @@ export default function Dashboard({ forums: initialForums, sidebar }: DashboardP
                                         {sidebar.trendingTopics.map((topic, index) => (
                                             <Link
                                                 key={topic.slug}
-                                                href={`/forum/${topic.slug}`}
+                                                href={`/beranda/forum/${topic.slug}`}
                                                 className="flex items-start gap-2 w-full text-left hover:text-primary transition-colors group"
                                             >
                                                 <span className="text-base font-bold text-muted-foreground group-hover:text-primary min-w-[20px]">

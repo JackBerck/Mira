@@ -1,4 +1,4 @@
-import Layout from '@/layouts';
+import AppLayout from '@/layouts/app-layout';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -41,23 +41,23 @@ export default function ForumShowPage({ forum, isLiked }: ForumShowProps) {
     });
 
     const handleLike = () => {
-        toggleLike(`/forum/${forum.id}/like`, { preserveScroll: true });
+        toggleLike(`/beranda/forum/${forum.id}/like`, { preserveScroll: true });
     };
 
     const submitComment = (e: React.FormEvent) => {
         e.preventDefault();
-        postComment(`/forum/${forum.id}/comment`, {
+        postComment(`/beranda/forum/${forum.id}/comment`, {
             preserveScroll: true,
             onSuccess: () => reset('content'), 
         });
     };
 
     return (
-        <Layout>
+        <AppLayout>
             <main className="container mx-auto px-12 py-8 md:py-12">
                 <header>
                     <div className="flex items-center justify-between">
-                        <Link href={'/forum'} className="text-sm text-primary hover:underline">
+                        <Link href={'/beranda'} className="text-sm text-primary hover:underline">
                             &larr; Kembali ke Forum
                         </Link>
                         {/* Logika untuk tombol "Bentuk Tim" */}
@@ -70,7 +70,7 @@ export default function ForumShowPage({ forum, isLiked }: ForumShowProps) {
                             </p>
                         </div>
                         <Button asChild>
-                            <Link href="/kolaborasi/buat">Buat Tim </Link>
+                            <Link href="/beranda/kolaborasi/buat">Buat Tim </Link>
                         </Button>
                     </div>
                     
@@ -145,6 +145,6 @@ export default function ForumShowPage({ forum, isLiked }: ForumShowProps) {
                     </div>
                 </section>
             </main>
-        </Layout>
+        </AppLayout>
     );
 }
