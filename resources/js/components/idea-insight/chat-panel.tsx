@@ -131,9 +131,9 @@ export default function ChatPanel({ userIdeaChat }: ChatPanelProps) {
     }
 
     return (
-        <Card className="border-muted/40 bg-card">
+        <Card className="border-muted/40 bg-card p-0">
             <CardContent className="p-0">
-                <div className="grid h-[84dvh] grid-rows-[1fr_auto] md:h-[72dvh]">
+                <div className="grid h-[84dvh] grid-rows-[1fr_auto] md:h-[78dvh]">
                     <div className="space-y-4 overflow-y-auto p-4">
                         {messages.map((m) => (
                             <ChatMessage
