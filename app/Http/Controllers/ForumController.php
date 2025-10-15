@@ -159,7 +159,16 @@ class ForumController extends Controller
 
     public function destroy(Forum $forum)
     {
-        // $this->authorize('delete', $forum);
+        // Check if user is owner or admin
+        $user = auth()->user();
+        
+        if (!$user) {
+            abort(401, 'Unauthorized');
+        }
+        
+        if ($forum->user_id !== $user->id && !$user->hasRole('admin')) {
+            abort(403, 'Anda tidak memiliki izin untuk menghapus forum ini.');
+        }
 
         if ($forum->image) {
             Storage::disk('public')->delete($forum->image);
@@ -167,6 +176,6 @@ class ForumController extends Controller
         
         $forum->delete();
 
-        return redirect()->route('forum.index')->with('success', 'Topik forum berhasil dihapus!');
+        return redirect()->route('dashboard')->with('success', 'Topik forum berhasil dihapus!');
     }
 }

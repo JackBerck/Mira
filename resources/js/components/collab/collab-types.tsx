@@ -14,4 +14,8 @@ export interface Collab {
     coverUrl?: string;
     createdAt: string;
     updatedAt: string;
+    user?: {
+        id: number;
+        name: string;
+    };
 }

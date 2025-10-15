@@ -8,33 +8,39 @@ use App\Http\Controllers\IdeaInsightController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Introduction / Landing Page
-Route::get('/', function () {
-    return Inertia::render('introduction/welcome');
-})->name('welcome');
-Route::get('/fitur', function () {
-    return Inertia::render('introduction/features');
-})->name('features');
-Route::get('/tentang', function () {
-    return Inertia::render('introduction/about');
-})->name('about');
-Route::get('/kontak', function () {
-    return Inertia::render('introduction/contact');
-})->name('contact');
-Route::post('/kontak', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
+Route::middleware('guest')->group(function () {
+    // Introduction / Landing Page
+    Route::get('/', function () {
+        return Inertia::render('introduction/welcome');
+    })->name('welcome');
+    Route::get('/fitur', function () {
+        return Inertia::render('introduction/features');
+    })->name('features');
+    Route::get('/tentang', function () {
+        return Inertia::render('introduction/about');
+    })->name('about');
+    Route::get('/kontak', function () {
+        return Inertia::render('introduction/contact');
+    })->name('contact');
+    Route::post('/kontak', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('beranda', [HomeController::class, 'index'])->name('dashboard');
-    Route::get('beranda/kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
+});
 
+Route::resource("test",CollaborationController::class);
+
+Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('dashboard');
     // collaboration
+    
+    Route::get('kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
     Route::get('kolaborasi/buat', [CollaborationController::class, 'create'])->name('collaboration.create');
     Route::post('kolaborasi', [CollaborationController::class, 'store'])->name('collaboration.store');
+    Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
     Route::put('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'update'])->name('collaboration.update');
     Route::delete('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'destroy'])->name('collaboration.destroy');
 
     // forum
-    Route::get('forum/buat', [ForumController::class, 'create'])->name('forum.buat');
+    Route::get('forum/buat', [ForumController::class, 'create'])->name('forum.create');
     Route::get('forum/{forum:slug}', [ForumController::class, 'show'])->name('forum.show');
     Route::post('forum', [ForumController::class, 'store'])->name('forum.store');
     Route::get('forum/{forum:slug}/edit', [ForumController::class, 'edit'])->name('forum.edit');
@@ -42,6 +48,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('forum/{forum:slug}', [ForumController::class, 'destroy'])->name('forum.destroy');
     Route::post('forum/{forum:id}/like', [ForumInteractionController::class, 'toggleLike'])->name('forum.like');
     Route::post('forum/{forum:id}/comment', [ForumInteractionController::class, 'storeComment'])->name('forum.comment');
+
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Mari Berpikir / Idea Insight
     Route::get('mari-berpikir', [IdeaInsightController::class, 'index'])->name('idea-insight');
@@ -56,10 +66,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // forum
 Route::get('forum', [ForumController::class, 'index'])->name('forum.index');
 
-
 // Collaboration Routes
 Route::get('kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');
 Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';

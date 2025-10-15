@@ -94,6 +94,10 @@ class HomeController extends Controller
                 'coverUrl' => $collab->image ? asset('storage/' . $collab->image) : null,
                 'createdAt' => $collab->created_at->toISOString(),
                 'updatedAt' => $collab->updated_at->toISOString(),
+                'user' => $collab->user ? [
+                    'id' => $collab->user->id,
+                    'name' => $collab->user->name,
+                ] : null,
             ];
         });
 

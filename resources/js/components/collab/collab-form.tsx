@@ -68,7 +68,7 @@ export function CollabForm({ categories, initial }: CollabFormProps) {
 
         // Delay sedikit untuk memastikan state terupdate
         setTimeout(() => {
-            post('/kolaborasi', {
+            post('/beranda/kolaborasi', {
                 onSuccess: () => {
                     // Form berhasil disubmit
                 },
