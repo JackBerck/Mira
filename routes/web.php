@@ -26,6 +26,7 @@ Route::post('/kontak', [\App\Http\Controllers\FeedbackController::class, 'store'
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('beranda', [HomeController::class, 'index'])->name('dashboard');
     Route::get('beranda/kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
+    Route::get('beranda/kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
 
     // collaboration
     Route::get('kolaborasi/buat', [CollaborationController::class, 'create'])->name('collaboration.create');
@@ -56,10 +57,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // forum
 Route::get('forum', [ForumController::class, 'index'])->name('forum.index');
 
-
 // Collaboration Routes
 Route::get('kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');
 Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
