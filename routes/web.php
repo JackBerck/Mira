@@ -39,6 +39,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/chat', [IdeaInsightController::class, 'chat']);
         Route::post('/export', [IdeaInsightController::class, 'export']);
     });
+
+    // Profile
+    Route::get('profil', [\App\Http\Controllers\Settings\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('profil/keterampilan-dan-minat', [\App\Http\Controllers\Settings\ProfileController::class, 'skillsInterests'])->name('profile.skills-interests');
+    Route::get('profil/portofolio', [\App\Http\Controllers\Settings\ProfileController::class, 'portfolio'])->name('profile.portfolio');
+    Route::patch('profil', [\App\Http\Controllers\Settings\ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Collaboration Routes

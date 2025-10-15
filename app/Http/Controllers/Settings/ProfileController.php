@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,26 +19,85 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('settings/profile', [
+        return Inertia::render('profile/index', [
+            'user' => $request->user(),
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => $request->session()->get('status'),
+            'status' => session('status'),
         ]);
     }
 
     /**
-     * Update the user's profile settings.
+     * Show skills and interests page.
+     */
+    public function skillsInterests(Request $request): Response
+    {
+        return Inertia::render('profile/skills-interests', [
+            'user' => $request->user(),
+            'status' => session('status'),
+        ]);
+    }
+
+    /**
+     * Show portfolio page.
+     */
+    public function portfolio(Request $request): Response
+    {
+        // In future, load from portfolio model
+        $portfolioItems = []; // Load from database
+
+        return Inertia::render('profile/portfolio', [
+            'portfolioItems' => $portfolioItems,
+            'status' => session('status'),
+        ]);
+    }
+
+    /**
+     * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            $validated['image'] = $request->file('image')->store('profile-images', 'public');
         }
 
-        $request->user()->save();
+        $user->fill($validated);
 
-        return to_route('profile.edit');
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        return back()->with('status', 'profile-updated');
+    }
+
+    /**
+     * Update skills and interests.
+     */
+    public function updateSkillsInterests(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'skills' => 'array',
+            'skills.*' => 'string|max:50',
+            'interests' => 'array',
+            'interests.*' => 'string|max:50',
+        ]);
+
+        $request->user()->update([
+            'skills' => $request->skills ?? [],
+            'interests' => $request->interests ?? [],
+        ]);
+
+        return back()->with('status', 'skills-updated');
     }
 
     /**

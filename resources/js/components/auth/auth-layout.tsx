@@ -45,7 +45,7 @@ export function AuthShell({
                 <aside className="order-1 md:order-2">
                     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border bg-muted">
                         <img
-                            src={imageUrl || '/placeholder.svg'}
+                            src={imageUrl || '/img/placeholder.png'}
                             alt={imageAlt}
                             sizes="(max-width: 768px) 100vw, 50vw"
                             className="object-cover"
