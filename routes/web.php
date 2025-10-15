@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CollaborationController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ForumInteractionController;
@@ -26,8 +27,6 @@ Route::middleware('guest')->group(function () {
 
 });
 
-Route::resource("test",CollaborationController::class);
-
 Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
     // collaboration
@@ -52,6 +51,9 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/pesan', [ChatController::class, 'index'])->name('chats.index');
+    Route::post('/pesan', [ChatController::class, 'store'])->name('chats.store');
+    Route::get('/pesan/{collaborationId}/messages', [ChatController::class, 'getMessages'])->name('chats.messages');
 
     // Mari Berpikir / Idea Insight
     Route::get('mari-berpikir', [IdeaInsightController::class, 'index'])->name('idea-insight');
