@@ -16,7 +16,11 @@ export default function GuestNavbar() {
                                 href="/"
                                 className="text-2xl font-bold text-blue-600"
                             >
-                                Mira
+                                <img
+                                    src="/img/logos/mira-black.png"
+                                    alt="Mira"
+                                    className="h-8 w-auto"
+                                />
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
