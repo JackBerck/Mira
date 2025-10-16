@@ -19,6 +19,7 @@ import {
     Home,
     TrendingUp,
     Users,
+    MessageSquareMore
 } from 'lucide-react';
 
 const mainNavItems: NavItem[] = [
@@ -42,6 +43,11 @@ const mainNavItems: NavItem[] = [
         href: '/mari-berpikir',
         icon: Brain,
     },
+    {
+        title: 'Pesan',
+        href: '/pesan',
+        icon: MessageSquareMore
+    }
 ];
 
 const discoverNavItems: NavItem[] = [
