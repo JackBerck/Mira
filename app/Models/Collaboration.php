@@ -28,7 +28,7 @@ class Collaboration extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(ForumCategory::class);
+        return $this->belongsTo(ForumCategory::class,'forum_category_id');
     }
 
     public function user(): BelongsTo

@@ -29,6 +29,7 @@ class UserSeeder extends Seeder
                 'interests' => json_encode(['Open Source', 'Web Development', 'AI']),
                 'portfolio_url' => 'https://alice.dev',
                 'image' => 'profile_images/alice.png',
+                'email_verified_at' => Carbon::now(),
             ],
             [
                 'name' => 'Bob Smith',
@@ -39,6 +40,7 @@ class UserSeeder extends Seeder
                 'interests' => json_encode(['Databases', 'API Development']),
                 'portfolio_url' => 'https://bob.dev',
                 'image' => 'profile_images/bob.png',
+                'email_verified_at' => Carbon::now(),
             ],
             [
                 'name' => 'Charlie Davis',
@@ -49,6 +51,7 @@ class UserSeeder extends Seeder
                 'interests' => json_encode(['UI/UX Design', 'Web Accessibility']),
                 'portfolio_url' => 'https://charlie.dev',
                 'image' => 'profile_images/charlie.png',
+                'email_verified_at' => Carbon::now(),
             ],
             [
                 'name' => 'Diana Prince',
@@ -59,6 +62,7 @@ class UserSeeder extends Seeder
                 'interests' => json_encode(['Justice', 'Human Rights']),
                 'portfolio_url' => 'https://diana.dev',
                 'image' => 'profile_images/diana.png',
+                'email_verified_at' => Carbon::now(),
             ],
             [
                 'name' => 'Ethan Hunt',
@@ -69,6 +73,7 @@ class UserSeeder extends Seeder
                 'interests' => json_encode(['Espionage', 'Technology']),
                 'portfolio_url' => 'https://ethan.dev',
                 'image' => 'profile_images/ethan.png',
+                'email_verified_at' => Carbon::now(),
             ],
             [
                 'name' => 'Fiona Glenanne',
@@ -79,6 +84,7 @@ class UserSeeder extends Seeder
                 'interests' => json_encode(['Cooking', 'Gardening']),
                 'portfolio_url' => 'https://fiona.dev',
                 'image' => 'profile_images/fiona.png',
+                'email_verified_at' => Carbon::now(),
             ],
         ];
 

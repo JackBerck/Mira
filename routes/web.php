@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CollaborationController;
+use App\Http\Controllers\DirectMessageController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ForumInteractionController;
 use App\Http\Controllers\HomeController;
@@ -53,6 +54,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pesan', [ChatController::class, 'index'])->name('chats.index');
     Route::post('/pesan', [ChatController::class, 'store'])->name('chats.store');
     Route::get('/pesan/{collaborationId}/messages', [ChatController::class, 'getMessages'])->name('chats.messages');
+    
+    // Direct Messages
+    Route::get('/direct-messages/conversations', [DirectMessageController::class, 'getConversations'])->name('direct-messages.conversations');
+    Route::get('/direct-messages/{userId}/messages', [DirectMessageController::class, 'getMessages'])->name('direct-messages.messages');
+    Route::post('/direct-messages', [DirectMessageController::class, 'store'])->name('direct-messages.store');
 
     // Mari Berpikir / Idea Insight
     Route::get('mari-berpikir', [IdeaInsightController::class, 'index'])->name('idea-insight');

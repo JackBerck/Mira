@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SendMessageDialog } from '@/components/collaboration/send-message-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { Link, usePage } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
@@ -46,7 +47,9 @@ interface PageProps extends Record<string, unknown> {
 }
 
 export default function CollabDetailPage() {
-    const { collaboration } = usePage<PageProps>().props;
+    const { collaboration, auth } = usePage<PageProps>().props;
+    const currentUser = (auth as { user: { id: number } }).user;
+    const isOwner = collaboration.user.id === currentUser.id;
 
     const statusLabel = {
         open: 'Terbuka',
@@ -157,32 +160,27 @@ export default function CollabDetailPage() {
                     </div>
 
                     <aside className="space-y-6">
-                        <div className="space-y-2">
-                            <h3 className="font-semibold">
-                                Mulai Berkolaborasi
-                            </h3>
-                            <Button
-                                className="w-full"
-                                onClick={() =>
-                                    alert(
-                                        'Permintaan bergabung terkirim (placeholder).',
-                                    )
-                                }
-                            >
-                                Gabung Tim
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                className="w-full"
-                                onClick={() =>
-                                    alert(
-                                        'Kirim pesan ke pengunggah (placeholder).',
-                                    )
-                                }
-                            >
-                                Kirim Pesan
-                            </Button>
-                        </div>
+                        {!isOwner && (
+                            <div className="space-y-2">
+                                <h3 className="font-semibold">
+                                    Mulai Berkolaborasi
+                                </h3>
+                                <Button
+                                    className="w-full"
+                                    onClick={() =>
+                                        alert(
+                                            'Permintaan bergabung terkirim (placeholder).',
+                                        )
+                                    }
+                                >
+                                    Gabung Tim
+                                </Button>
+                                <SendMessageDialog
+                                    receiverId={collaboration.user.id}
+                                    receiverName={collaboration.user.name}
+                                />
+                            </div>
+                        )}
 
                         <div className="space-y-2">
                             <h3 className="font-semibold">Pembuat</h3>

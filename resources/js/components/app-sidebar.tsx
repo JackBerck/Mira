@@ -10,12 +10,12 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+// import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     Brain,
-    BriefcaseBusiness,
+    // BriefcaseBusiness,
     Home,
     TrendingUp,
     Users,
@@ -28,16 +28,16 @@ const mainNavItems: NavItem[] = [
         href: '/beranda',
         icon: Home,
     },
-    {
-        title: 'Forum',
-        href: '/forum',
-        icon: Users,
-    },
-    {
-        title: 'Kolaborasi',
-        href: '/kolaborasi',
-        icon: BriefcaseBusiness,
-    },
+    // {
+    //     title: 'Forum',
+    //     href: '/forum',
+    //     icon: Users,
+    // },
+    // {
+    //     title: 'Kolaborasi',
+    //     href: '/kolaborasi',
+    //     icon: BriefcaseBusiness,
+    // },
     {
         title: 'Mari Berpikir',
         href: '/mari-berpikir',
