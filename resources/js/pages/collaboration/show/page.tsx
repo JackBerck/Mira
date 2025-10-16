@@ -160,7 +160,19 @@ export default function CollabDetailPage() {
                     </div>
 
                     <aside className="space-y-6">
-                        {!isOwner && (
+                        {isOwner ? (
+                            <div className="space-y-2">
+                                <h3 className="font-semibold">
+                                    Kelola Kolaborasi
+                                </h3>
+                                <Link
+                                    href={`/beranda/kolaborasi/${collaboration.slug}/edit`}
+                                    className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors w-full"
+                                >
+                                    Edit Kolaborasi
+                                </Link>
+                            </div>
+                        ) : (
                             <div className="space-y-2">
                                 <h3 className="font-semibold">
                                     Mulai Berkolaborasi

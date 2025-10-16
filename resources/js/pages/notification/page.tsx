@@ -26,6 +26,9 @@ interface Notification {
         commenter_avatar?: string;
         requester_name?: string;
         requester_avatar?: string;
+        added_by_name?: string;
+        added_by_avatar?: string;
+        role?: string;
         status?: string;
     };
     read_at: string | null;
@@ -50,6 +53,8 @@ function NotificationIcon({ type }: { type: string }) {
             return <Users className="h-5 w-5 text-green-500" />;
         case 'join_request_response':
             return <CheckCheck className="h-5 w-5 text-purple-500" />;
+        case 'added_to_collaboration':
+            return <Users className="h-5 w-5 text-indigo-500" />;
         default:
             return <Bell className="h-5 w-5 text-gray-500" />;
     }
@@ -65,8 +70,8 @@ function NotificationItem({ notification }: { notification: Notification }) {
         href = `/beranda/kolaborasi/${data.collaboration_slug}`;
     }
 
-    const avatar = data.liker_avatar || data.commenter_avatar || data.requester_avatar;
-    const name = data.liker_name || data.commenter_name || data.requester_name;
+    const avatar = data.liker_avatar || data.commenter_avatar || data.requester_avatar || data.added_by_avatar;
+    const name = data.liker_name || data.commenter_name || data.requester_name || data.added_by_name;
 
     return (
         <Card

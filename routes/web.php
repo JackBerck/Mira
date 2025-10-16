@@ -35,9 +35,15 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
     Route::get('kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
     Route::get('kolaborasi/buat', [CollaborationController::class, 'create'])->name('collaboration.create');
     Route::post('kolaborasi', [CollaborationController::class, 'store'])->name('collaboration.store');
+    Route::get('kolaborasi/{collaboration:slug}/edit', [CollaborationController::class, 'edit'])->name('collaboration.edit');
     Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
     Route::put('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'update'])->name('collaboration.update');
     Route::delete('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'destroy'])->name('collaboration.destroy');
+    
+    // Collaboration Members Management
+    Route::post('kolaborasi/{collaboration:slug}/member', [CollaborationController::class, 'addMember'])->name('collaboration.member.add');
+    Route::delete('kolaborasi/{collaboration:slug}/member/{collaborator}', [CollaborationController::class, 'removeMember'])->name('collaboration.member.remove');
+    Route::get('kolaborasi/{collaboration:slug}/search-users', [CollaborationController::class, 'searchUsers'])->name('collaboration.search-users');
 
     // forum
     Route::get('forum/buat', [ForumController::class, 'create'])->name('forum.create');

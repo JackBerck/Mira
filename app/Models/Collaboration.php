@@ -26,6 +26,23 @@ class Collaboration extends Model
         'skills_needed' => 'array',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        // If image already starts with /storage/, return as is
+        if (str_starts_with($this->image, '/storage/')) {
+            return $this->image;
+        }
+
+        // Otherwise, prepend /storage/
+        return '/storage/' . $this->image;
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(ForumCategory::class,'forum_category_id');

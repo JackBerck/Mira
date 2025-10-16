@@ -206,7 +206,7 @@ export default function MyCollaborations({
                                                             </Button>
                                                         </Link>
                                                         <Link
-                                                            href={`/beranda/kolaborasi/${collaboration.id}/edit`}
+                                                            href={`/beranda/kolaborasi/${collaboration.slug}/edit`}
                                                         >
                                                             <Button
                                                                 variant="ghost"
