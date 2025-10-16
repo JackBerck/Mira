@@ -91,7 +91,7 @@ class HomeController extends Controller
                 'membersCount' => $collab->collaborators->count(),
                 'skillsNeeded' => $skills,
                 'forumId' => null,
-                'coverUrl' => $collab->image ? asset('storage/' . $collab->image) : null,
+                'coverUrl' => $collab->image ?: null,
                 'createdAt' => $collab->created_at->toISOString(),
                 'updatedAt' => $collab->updated_at->toISOString(),
                 'user' => $collab->user ? [

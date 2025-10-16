@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Forum;
 use App\Models\ForumLike;
 use App\Models\ForumComment;
+use App\Notifications\ForumLikedNotification;
+use App\Notifications\ForumCommentedNotification;
 use Illuminate\Support\Facades\Auth;
 
 class ForumInteractionController extends Controller
@@ -17,9 +19,33 @@ class ForumInteractionController extends Controller
         if ($like) {
             $like->delete();
             $liked = false;
+
+            // Delete related notification when unliked to prevent spam
+            if ($forum->user_id !== Auth::id()) {
+                $forum->user->notifications()
+                    ->where('type', 'App\Notifications\ForumLikedNotification')
+                    ->whereJsonContains('data->forum_id', $forum->id)
+                    ->whereJsonContains('data->liker_id', Auth::id())
+                    ->delete();
+            }
         } else {
             $forum->likes()->create(['user_id' => Auth::id()]);
             $liked = true;
+
+            // Send notification to forum owner (only if not liking own forum)
+            if ($forum->user_id !== Auth::id()) {
+                // Check if there's already an unread notification from this user for this forum
+                $existingNotification = $forum->user->unreadNotifications()
+                    ->where('type', 'App\Notifications\ForumLikedNotification')
+                    ->whereJsonContains('data->forum_id', $forum->id)
+                    ->whereJsonContains('data->liker_id', Auth::id())
+                    ->first();
+
+                // Only send notification if there isn't an existing unread one (prevent spam)
+                if (!$existingNotification) {
+                    $forum->user->notify(new ForumLikedNotification($forum, Auth::user()));
+                }
+            }
         }
 
         return back()->with('status', [
@@ -30,14 +56,42 @@ class ForumInteractionController extends Controller
 
     public function storeComment(Request $request, Forum $forum)
     {
-        $validated =$request->validate([
+        $validated = $request->validate([
             'content' => 'required|string|max:1000',
         ]);
 
-        $forum->comments()->create([
+        // Check for duplicate comments within last 1 minute (anti-spam)
+        $recentComment = $forum->comments()
+            ->where('user_id', Auth::id())
+            ->where('content', $validated['content'])
+            ->where('created_at', '>=', now()->subMinute())
+            ->exists();
+
+        if ($recentComment) {
+            return back()->with('error', 'Anda baru saja mengirim komentar yang sama. Tunggu sebentar.');
+        }
+
+        $comment = $forum->comments()->create([
             'user_id' => Auth::id(),
             'content' => $validated['content'],
         ]);
+
+        // Send notification to forum owner (only if not commenting on own forum)
+        if ($forum->user_id !== Auth::id()) {
+            // Check if there's already an unread notification from this user for this forum
+            // within the last 5 minutes to prevent spam
+            $recentNotification = $forum->user->unreadNotifications()
+                ->where('type', 'App\Notifications\ForumCommentedNotification')
+                ->whereJsonContains('data->forum_id', $forum->id)
+                ->whereJsonContains('data->commenter_id', Auth::id())
+                ->where('created_at', '>=', now()->subMinutes(5))
+                ->exists();
+
+            // Only send notification if there isn't a recent one
+            if (!$recentNotification) {
+                $forum->user->notify(new ForumCommentedNotification($forum, $comment, Auth::user()));
+            }
+        }
 
         return back()->with('status', 'Komentar berhasil ditambahkan.');
     }

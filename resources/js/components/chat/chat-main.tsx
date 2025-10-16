@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PendingJoinRequests } from '@/components/chat/pending-join-requests';
 import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
 import axios from 'axios';
@@ -205,6 +206,8 @@ export function ChatMain({ collaborationId }: ChatMainProps) {
 
     const memberCount = collaboration.collaborators.length + 1;
 
+    const isOwner = collaboration.user.id === auth.user.id;
+
     return (
         <div className="m-4 flex flex-1 flex-col rounded-lg shadow-sm">
             <div className="flex items-center justify-between border border-b p-4">
@@ -226,6 +229,11 @@ export function ChatMain({ collaborationId }: ChatMainProps) {
                     </div>
                 </div>
             </div>
+
+            <PendingJoinRequests
+                collaborationId={collaborationId}
+                isOwner={isOwner}
+            />
 
             <div className="flex-1 space-y-4 overflow-y-auto p-6">
                 {messages.length === 0 ? (

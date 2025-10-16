@@ -1,7 +1,7 @@
 import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
-import Footer from '@/components/footer';
+// import Footer from '@/components/footer';
 import { TopNavbar } from '@/components/navigation-bar/top';
 import { type BreadcrumbItem } from '@/types';
 import { type PropsWithChildren } from 'react';
@@ -20,7 +20,7 @@ export default function AppSidebarLayout({
                     </AppContent>
                 </div>
             </AppShell>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 }
