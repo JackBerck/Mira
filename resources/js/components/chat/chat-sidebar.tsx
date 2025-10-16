@@ -58,12 +58,26 @@ const CollaborationItem = ({
     collaboration,
     isActive,
     onClick,
+    unreadCount,
+    pendingRequestsCount,
 }: {
     collaboration: Collaboration;
     isActive: boolean;
     onClick: () => void;
+    unreadCount?: number;
+    pendingRequestsCount?: number;
 }) => {
     const memberCount = collaboration.collaborators.length + 1; // +1 for owner
+    const totalBadgeCount = (unreadCount || 0) + (pendingRequestsCount || 0);
+
+    // Debug log
+    if (pendingRequestsCount || unreadCount) {
+        console.log(`🔴 Badge for ${collaboration.title}:`, {
+            unreadCount,
+            pendingRequestsCount,
+            totalBadgeCount,
+        });
+    }
 
     return (
         <div
@@ -73,24 +87,38 @@ const CollaborationItem = ({
             )}
             onClick={onClick}
         >
-            <Avatar>
-                <AvatarImage
-                    src={collaboration.image || '/placeholder.svg'}
-                    alt={collaboration.title}
-                />
-                <AvatarFallback>
-                    <Users className="h-5 w-5" />
-                </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+                <Avatar>
+                    <AvatarImage
+                        src={collaboration.image || '/placeholder.svg'}
+                        alt={collaboration.title}
+                    />
+                    <AvatarFallback>
+                        <Users className="h-5 w-5" />
+                    </AvatarFallback>
+                </Avatar>
+                {totalBadgeCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
+                        {totalBadgeCount > 9 ? '9+' : totalBadgeCount}
+                    </span>
+                )}
+            </div>
             <div className="flex-1 overflow-hidden">
                 <div className="flex items-center justify-between">
                     <span className="truncate font-medium">
                         {collaboration.title}
                     </span>
                 </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Users className="h-3 w-3" />
-                    <span>{memberCount} anggota</span>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        <span>{memberCount} anggota</span>
+                    </div>
+                    {pendingRequestsCount && pendingRequestsCount > 0 && (
+                        <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900 dark:text-red-200">
+                            {pendingRequestsCount} permintaan
+                        </span>
+                    )}
                 </div>
             </div>
         </div>
@@ -157,6 +185,8 @@ export function ChatSidebar({
         [],
     );
     const [loading, setLoading] = useState(false);
+    const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
+    const [pendingRequestsCounts, setPendingRequestsCounts] = useState<Record<number, number>>({});
 
     useEffect(() => {
         if (activeTab === 'personal') {
@@ -165,6 +195,15 @@ export function ChatSidebar({
             return () => clearInterval(interval);
         }
     }, [activeTab]);
+
+    useEffect(() => {
+        if (activeTab === 'groups' && collaborations.length > 0) {
+            fetchCollaborationStats();
+            const interval = setInterval(fetchCollaborationStats, 10000); // Every 10 seconds
+            return () => clearInterval(interval);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab, collaborations.length]);
 
     const fetchConversations = async () => {
         setLoading(true);
@@ -175,6 +214,60 @@ export function ChatSidebar({
             console.error('Error fetching conversations:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchCollaborationStats = async () => {
+        try {
+            console.log('📊 Fetching collaboration stats for', collaborations.length, 'collaborations');
+            
+            // Fetch unread counts and pending requests for all collaborations
+            const statsPromises = collaborations.map(async (collab) => {
+                try {
+                    const [unreadResponse, pendingResponse] = await Promise.all([
+                        axios.get(`/pesan/${collab.id}/unread-count`),
+                        axios.get(`/kolaborasi/${collab.id}/pending-requests`),
+                    ]);
+                    
+                    console.log(`📈 Stats for ${collab.title}:`, {
+                        unread: unreadResponse.data.count,
+                        pending: pendingResponse.data.requests?.length,
+                    });
+                    
+                    return {
+                        id: collab.id,
+                        unreadCount: unreadResponse.data.count || 0,
+                        pendingCount: pendingResponse.data.requests?.length || 0,
+                    };
+                } catch (err) {
+                    console.error(`❌ Error fetching stats for ${collab.title}:`, err);
+                    return {
+                        id: collab.id,
+                        unreadCount: 0,
+                        pendingCount: 0,
+                    };
+                }
+            });
+
+            const stats = await Promise.all(statsPromises);
+            
+            const newUnreadCounts: Record<number, number> = {};
+            const newPendingCounts: Record<number, number> = {};
+            
+            stats.forEach((stat) => {
+                newUnreadCounts[stat.id] = stat.unreadCount;
+                newPendingCounts[stat.id] = stat.pendingCount;
+            });
+
+            console.log('✅ Final counts:', { 
+                unread: newUnreadCounts, 
+                pending: newPendingCounts 
+            });
+
+            setUnreadCounts(newUnreadCounts);
+            setPendingRequestsCounts(newPendingCounts);
+        } catch (error) {
+            console.error('❌ Error fetching collaboration stats:', error);
         }
     };
 
@@ -234,6 +327,8 @@ export function ChatSidebar({
                                 onClick={() =>
                                     onSelectCollaboration(collaboration.id)
                                 }
+                                unreadCount={unreadCounts[collaboration.id]}
+                                pendingRequestsCount={pendingRequestsCounts[collaboration.id]}
                             />
                         ))
                     )

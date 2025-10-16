@@ -46,6 +46,11 @@ class Collaboration extends Model
         return $this->hasMany(CollaborationChat::class);
     }
 
+    public function joinRequests()
+    {
+        return $this->hasMany(CollaborationJoinRequest::class);
+    }
+
     protected static function boot()
     {
         parent::boot();

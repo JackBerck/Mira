@@ -53,12 +53,27 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pesan', [ChatController::class, 'index'])->name('chats.index');
     Route::post('/pesan', [ChatController::class, 'store'])->name('chats.store');
+    Route::get('/pesan/total-unread-count', [ChatController::class, 'getTotalUnreadCount'])->name('chats.total-unread-count');
     Route::get('/pesan/{collaborationId}/messages', [ChatController::class, 'getMessages'])->name('chats.messages');
+    Route::get('/pesan/{collaborationId}/unread-count', [ChatController::class, 'getUnreadCount'])->name('chats.unread-count');
     
     // Direct Messages
     Route::get('/direct-messages/conversations', [DirectMessageController::class, 'getConversations'])->name('direct-messages.conversations');
     Route::get('/direct-messages/{userId}/messages', [DirectMessageController::class, 'getMessages'])->name('direct-messages.messages');
     Route::post('/direct-messages', [DirectMessageController::class, 'store'])->name('direct-messages.store');
+
+    // Notifications
+    Route::get('/notifikasi', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifikasi/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifikasi/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifikasi/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::get('/notifikasi/unread-count', [\App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
+
+    // Collaboration Join Requests
+    Route::post('/kolaborasi/{collaboration}/join', [\App\Http\Controllers\CollaborationJoinRequestController::class, 'store'])->name('collaboration.join');
+    Route::post('/kolaborasi/join-request/{joinRequest}/accept', [\App\Http\Controllers\CollaborationJoinRequestController::class, 'accept'])->name('collaboration.join.accept');
+    Route::post('/kolaborasi/join-request/{joinRequest}/reject', [\App\Http\Controllers\CollaborationJoinRequestController::class, 'reject'])->name('collaboration.join.reject');
+    Route::get('/kolaborasi/{collaborationId}/pending-requests', [\App\Http\Controllers\CollaborationJoinRequestController::class, 'getPendingRequests'])->name('collaboration.pending-requests');
 
     // Mari Berpikir / Idea Insight
     Route::get('mari-berpikir', [IdeaInsightController::class, 'index'])->name('idea-insight');

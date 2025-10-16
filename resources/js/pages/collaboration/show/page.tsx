@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { SendMessageDialog } from '@/components/collaboration/send-message-dialog';
+import { JoinCollaborationDialog } from '@/components/collaboration/join-collaboration-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { Link, usePage } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
@@ -165,16 +165,10 @@ export default function CollabDetailPage() {
                                 <h3 className="font-semibold">
                                     Mulai Berkolaborasi
                                 </h3>
-                                <Button
-                                    className="w-full"
-                                    onClick={() =>
-                                        alert(
-                                            'Permintaan bergabung terkirim (placeholder).',
-                                        )
-                                    }
-                                >
-                                    Gabung Tim
-                                </Button>
+                                <JoinCollaborationDialog
+                                    collaborationId={collaboration.id}
+                                    collaborationTitle={collaboration.title}
+                                />
                                 <SendMessageDialog
                                     receiverId={collaboration.user.id}
                                     receiverName={collaboration.user.name}

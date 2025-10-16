@@ -81,4 +81,43 @@ class ChatController extends Controller
             'chat' => $chat,
         ], 201);
     }
+
+    public function getUnreadCount($collaborationId)
+    {
+        $collaboration = Collaboration::findOrFail($collaborationId);
+        
+        // Verify user has access to this collaboration
+        $user = auth()->user();
+        if ($collaboration->user_id !== $user->id && 
+            !$collaboration->collaborators()->where('user_id', $user->id)->exists()) {
+            return response()->json(['count' => 0]);
+        }
+
+        // For now, return 0 as we don't have read status tracking
+        // This can be enhanced later with a read_receipts table
+        return response()->json(['count' => 0]);
+    }
+
+    public function getTotalUnreadCount()
+    {
+        $user = auth()->user();
+        
+        // Get all collaborations where user is owner or collaborator
+        $collaborations = Collaboration::where('user_id', $user->id)
+            ->orWhereHas('collaborators', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->get();
+
+        // Count pending join requests for collaborations owned by user
+        $pendingRequestsCount = \App\Models\CollaborationJoinRequest::whereIn('collaboration_id', 
+            Collaboration::where('user_id', $user->id)->pluck('id')
+        )
+        ->where('status', 'pending')
+        ->count();
+
+        // For now, total unread is just pending requests count
+        // This can be enhanced later with actual message read tracking
+        return response()->json(['count' => $pendingRequestsCount]);
+    }
 }

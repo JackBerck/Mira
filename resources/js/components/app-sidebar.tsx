@@ -10,6 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { Badge } from '@/components/ui/badge';
 // import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
@@ -19,8 +20,11 @@ import {
     Home,
     TrendingUp,
     Users,
-    MessageSquareMore
+    MessageSquareMore,
+    BellDot
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const mainNavItems: NavItem[] = [
     {
@@ -47,6 +51,11 @@ const mainNavItems: NavItem[] = [
         title: 'Pesan',
         href: '/pesan',
         icon: MessageSquareMore
+    },
+    {
+        title: 'Notifikasi',
+        href: '/notifikasi',
+        icon: BellDot
     }
 ];
 
@@ -64,12 +73,52 @@ const discoverNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
-    const { url } = usePage();
+    const { url, props } = usePage();
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
     // Check if current path matches nav item
     const isActive = (href: string) => {
         return url.startsWith(href);
     };
+
+    // Fetch unread notification count
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const response = await axios.get('/notifikasi/unread-count');
+                setUnreadCount(response.data.count);
+            } catch (error) {
+                console.error('Error fetching unread count:', error);
+            }
+        };
+
+        if (props.auth) {
+            fetchUnreadCount();
+            // Refresh every 30 seconds
+            const interval = setInterval(fetchUnreadCount, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [props.auth]);
+
+    // Fetch unread messages count
+    useEffect(() => {
+        const fetchUnreadMessages = async () => {
+            try {
+                const response = await axios.get('/pesan/total-unread-count');
+                setUnreadMessagesCount(response.data.count);
+            } catch (error) {
+                console.error('Error fetching unread messages:', error);
+            }
+        };
+
+        if (props.auth) {
+            fetchUnreadMessages();
+            // Refresh every 10 seconds
+            const interval = setInterval(fetchUnreadMessages, 10000);
+            return () => clearInterval(interval);
+        }
+    }, [props.auth]);
 
     return (
         <Sidebar collapsible="icon" variant="sidebar" className="border-r">
@@ -105,6 +154,16 @@ export function AppSidebar() {
                                             <span className="font-normal">
                                                 {item.title}
                                             </span>
+                                            {item.href === '/notifikasi' && unreadCount > 0 && (
+                                                <Badge variant="destructive" className="ml-auto h-5 min-w-5 rounded-full px-1 text-xs">
+                                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                                </Badge>
+                                            )}
+                                            {item.href === '/pesan' && unreadMessagesCount > 0 && (
+                                                <Badge variant="destructive" className="ml-auto h-5 min-w-5 rounded-full px-1 text-xs">
+                                                    {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                                                </Badge>
+                                            )}
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
