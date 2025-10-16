@@ -51,3 +51,12 @@ export interface IdeaInsight {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+declare global {
+    interface PageProps extends SharedData {
+        [key: string]: unknown; // This allows for additional properties...
+    }
+    function route(name: string, params?: Record<string, unknown>, absolute?: boolean): string;
+}
+
+export {};

@@ -1,7 +1,19 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import Layout from '@/layouts';
+import AppLayout from '@/layouts/app-layout';
 import { Link, usePage } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
+
+interface Collaborator {
+    id: number;
+    role: string;
+    user: {
+        id: number;
+        name: string;
+        avatar: string | null;
+    };
+    joined_at: string;
+}
 
 interface Collaboration {
     id: number;
@@ -9,20 +21,24 @@ interface Collaboration {
     slug: string;
     description: string;
     skills_needed: string[];
-    status: 'open' | 'in_progress' | 'completed';
+    status: 'open' | 'in-progress' | 'completed';
     image: string | null;
     forum_category_id: number;
-    user_id: number;
+    category: {
+        id: number;
+        name: string;
+        slug: string;
+    };
+    user: {
+        id: number;
+        name: string;
+        avatar: string | null;
+    };
+    collaborators: Collaborator[];
+    collaborators_count: number;
+    chats_count: number;
     created_at: string;
     updated_at: string;
-    category?: {
-        id: number;
-        name: string;
-    };
-    user?: {
-        id: number;
-        name: string;
-    };
 }
 
 interface PageProps extends Record<string, unknown> {
@@ -34,26 +50,34 @@ export default function CollabDetailPage() {
 
     const statusLabel = {
         open: 'Terbuka',
-        in_progress: 'Sedang Berjalan',
+        'in-progress': 'Sedang Berjalan',
         completed: 'Selesai',
     }[collaboration.status];
 
+    const statusVariant = {
+        open: 'default' as const,
+        'in-progress': 'secondary' as const,
+        completed: 'outline' as const,
+    }[collaboration.status];
+
     return (
-        <Layout>
+        <AppLayout>
             <main className="container mx-auto space-y-8 px-4 py-8">
+                {/* Back Navigation */}
+                <Link
+                    href="/beranda/kolaborasi"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Kembali ke Kolaborasi
+                </Link>
+
                 <header className="space-y-2">
                     <div className="flex items-center gap-2">
                         <Badge variant="secondary">
-                            {collaboration.category?.name || 'Umum'}
+                            {collaboration.category.name}
                         </Badge>
-                        <Badge
-                            className="capitalize"
-                            variant={
-                                collaboration.status === 'open'
-                                    ? 'default'
-                                    : 'secondary'
-                            }
-                        >
+                        <Badge className="capitalize" variant={statusVariant}>
                             {statusLabel}
                         </Badge>
                     </div>
@@ -61,24 +85,31 @@ export default function CollabDetailPage() {
                         {collaboration.title}
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        0 anggota •{' '}
+                        {collaboration.collaborators_count}{' '}
+                        {collaboration.collaborators_count === 1
+                            ? 'anggota'
+                            : 'anggota'}{' '}
+                        •{' '}
                         {new Date(collaboration.updated_at).toLocaleDateString(
                             'id-ID',
+                            {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            },
                         )}
                     </p>
                 </header>
 
                 <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <div className="space-y-6 lg:col-span-2">
-                        <img
-                            src={
-                                collaboration.image
-                                    ? `/storage/${collaboration.image}`
-                                    : '/kolaborasi-banner.jpg'
-                            }
-                            alt={`Banner ${collaboration.title}`}
-                            className="h-56 w-full rounded-md object-cover md:h-72"
-                        />
+                        {collaboration.image && (
+                            <img
+                                src={collaboration.image}
+                                alt={`Banner ${collaboration.title}`}
+                                className="h-56 w-full rounded-md object-cover md:h-72"
+                            />
+                        )}
                         <article className="prose prose-sm dark:prose-invert max-w-none">
                             <p className="text-pretty">
                                 {collaboration.description}
@@ -91,16 +122,19 @@ export default function CollabDetailPage() {
                             </h2>
                             <div className="flex flex-wrap gap-2">
                                 {collaboration.skills_needed &&
+                                Array.isArray(collaboration.skills_needed) &&
                                 collaboration.skills_needed.length > 0 ? (
-                                    collaboration.skills_needed.map((s) => (
-                                        <Badge
-                                            key={s}
-                                            variant="outline"
-                                            className="bg-background"
-                                        >
-                                            {s}
-                                        </Badge>
-                                    ))
+                                    collaboration.skills_needed.map(
+                                        (s, index) => (
+                                            <Badge
+                                                key={`${s}-${index}`}
+                                                variant="outline"
+                                                className="bg-background"
+                                            >
+                                                {s}
+                                            </Badge>
+                                        ),
+                                    )
                                 ) : (
                                     <p className="text-sm text-muted-foreground">
                                         Belum ada keahlian yang ditentukan
@@ -109,19 +143,17 @@ export default function CollabDetailPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <h2 className="text-lg font-semibold">
-                                Aktivitas (Preview)
-                            </h2>
-                            <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                                <li>Diskusi awal ide, menyusun scope MVP</li>
-                                <li>Riset singkat referensi & teknologi</li>
-                                <li>
-                                    Rencana sprint 1 (2 pekan) dan pembagian
-                                    tugas
-                                </li>
-                            </ul>
-                        </div>
+                        {collaboration.chats_count > 0 && (
+                            <div className="space-y-3">
+                                <h2 className="text-lg font-semibold">
+                                    Aktivitas Terbaru
+                                </h2>
+                                <p className="text-sm text-muted-foreground">
+                                    {collaboration.chats_count} diskusi dalam
+                                    kolaborasi ini
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <aside className="space-y-6">
@@ -153,40 +185,97 @@ export default function CollabDetailPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <h3 className="font-semibold">Tautan Terkait</h3>
-                            {collaboration.forum_category_id ? (
-                                <Link
-                                    href={`/forum/${collaboration.forum_category_id}`}
-                                    className="text-sm underline underline-offset-4"
-                                >
-                                    Baca topik forum asal kolaborasi
-                                </Link>
-                            ) : (
-                                <p className="text-sm text-muted-foreground">
-                                    Tidak terkait forum
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
                             <h3 className="font-semibold">Pembuat</h3>
-                            <p className="text-sm">
-                                {collaboration.user?.name || 'Pengguna'}
+                            <div className="flex items-center gap-2">
+                                {collaboration.user.avatar ? (
+                                    <img
+                                        src={collaboration.user.avatar}
+                                        alt={collaboration.user.name}
+                                        className="h-8 w-8 rounded-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                                        <span className="text-xs font-medium text-primary">
+                                            {collaboration.user.name
+                                                .charAt(0)
+                                                .toUpperCase()}
+                                        </span>
+                                    </div>
+                                )}
+                                <p className="text-sm font-medium">
+                                    {collaboration.user.name}
+                                </p>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Dibuat{' '}
+                                {new Date(
+                                    collaboration.created_at,
+                                ).toLocaleDateString('id-ID', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                })}
                             </p>
                         </div>
 
-                        <div className="space-y-2">
-                            <h3 className="font-semibold">Tim (Preview)</h3>
-                            <ul className="space-y-1 text-sm text-muted-foreground">
-                                <li>Inisiator (Lead)</li>
-                                <li>Frontend Engineer</li>
-                                <li>UX Researcher</li>
-                                <li>PM/Koordinator</li>
-                            </ul>
+                        <div className="space-y-3">
+                            <h3 className="font-semibold">
+                                Tim Kolaborasi (
+                                {collaboration.collaborators_count})
+                            </h3>
+                            {collaboration.collaborators &&
+                            collaboration.collaborators.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {collaboration.collaborators.map(
+                                        (collaborator) => (
+                                            <li
+                                                key={collaborator.id}
+                                                className="flex items-center gap-2"
+                                            >
+                                                {collaborator.user.avatar ? (
+                                                    <img
+                                                        src={
+                                                            collaborator.user
+                                                                .avatar
+                                                        }
+                                                        alt={
+                                                            collaborator.user
+                                                                .name
+                                                        }
+                                                        className="h-6 w-6 rounded-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
+                                                        <span className="text-[10px] font-medium text-primary">
+                                                            {collaborator.user.name
+                                                                .charAt(0)
+                                                                .toUpperCase()}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium">
+                                                        {collaborator.user.name}
+                                                    </p>
+                                                    {collaborator.role && (
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {collaborator.role}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </li>
+                                        ),
+                                    )}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">
+                                    Belum ada anggota yang bergabung
+                                </p>
+                            )}
                         </div>
                     </aside>
                 </section>
             </main>
-        </Layout>
+        </AppLayout>
     );
 }

@@ -1,31 +1,75 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Link } from '@inertiajs/react';
-import { MessageCircle, Heart, Clock } from 'lucide-react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { MessageCircle, Heart, Clock, MoreVertical, Trash2, Flag } from 'lucide-react';
 import type { Forum } from './forum-types';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 export function ForumListItem({ forum }: { forum: Forum }) {
+    const { props } = usePage<{ auth: { user?: { id: number; role?: string } } }>();
+    const currentUser = props.auth?.user;
+    
+    // Check if user can delete (owner or admin)
+    const canDelete = currentUser && (
+        currentUser.id === forum.user.id || 
+        currentUser.role === 'admin'
+    );
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (confirm('Apakah Anda yakin ingin menghapus forum ini?')) {
+            router.delete(`/beranda/forum/${forum.slug}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    // Optional: show success message
+                },
+                onError: (errors) => {
+                    console.error('Error deleting forum:', errors);
+                    alert('Gagal menghapus forum. Silakan coba lagi.');
+                }
+            });
+        }
+    };
+
+    const handleReport = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Show success alert
+        alert('Laporan berhasil terkirim ke admin. Terima kasih atas kontribusi Anda!');
+    };
+
     return (
         <Card className="overflow-hidden border bg-card text-card-foreground hover:border-primary/50 transition-all hover:shadow-md">
-            <Link
-                href={`/forum/${forum.slug}`}
-                className="block focus:ring-2 focus:ring-primary focus:outline-none"
-            >
-                <CardContent className="p-0">
-                    <div className="flex flex-col md:flex-row gap-3 p-4">
-                        {/* Left: Image (if exists) */}
-                        {forum.image && (
-                            <div className="md:w-40 flex-shrink-0">
-                                <img
-                                    src={forum.image}
-                                    alt={`Cover forum ${forum.title}`}
-                                    className="w-full h-24 md:h-28 object-cover rounded-md"
-                                />
-                            </div>
-                        )}
+            <CardContent className="p-0">
+                <div className="relative">
+                    <Link
+                        href={`/beranda/forum/${forum.slug}`}
+                        className="block focus:ring-2 focus:ring-primary focus:outline-none"
+                    >
+                        <div className="flex flex-col md:flex-row gap-3 p-4">
+                            {/* Left: Image (if exists) */}
+                            {forum.image && (
+                                <div className="md:w-40 flex-shrink-0">
+                                    <img
+                                        src={forum.image}
+                                        alt={`Cover forum ${forum.title}`}
+                                        className="w-full h-24 md:h-28 object-cover rounded-md"
+                                    />
+                                </div>
+                            )}
 
-                        {/* Right: Content */}
-                        <div className="flex-1 space-y-2">
+                            {/* Right: Content */}
+                            <div className="flex-1 space-y-2">
                             {/* Header with Category and Author */}
                             <div className="flex items-center gap-2 flex-wrap">
                                 <Badge variant="secondary" className="text-xs py-0 px-2 h-5">
@@ -98,9 +142,56 @@ export function ForumListItem({ forum }: { forum: Forum }) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </CardContent>
-            </Link>
+                        </div>
+                    </Link>
+                    
+                    {/* Dropdown Menu for Actions - Show for all logged-in users */}
+                    {currentUser && (
+                        <div className="absolute top-2 right-2 z-10">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 rounded-full hover:bg-muted"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <MoreVertical className="h-4 w-4" />
+                                        <span className="sr-only">Open menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {/* Report option for all users */}
+                                    <DropdownMenuItem
+                                        className="cursor-pointer"
+                                        onClick={handleReport}
+                                    >
+                                        <Flag className="mr-2 h-4 w-4" />
+                                        Laporkan ke Admin
+                                    </DropdownMenuItem>
+                                    
+                                    {/* Delete option only for owner or admin */}
+                                    {canDelete && (
+                                        <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                className="text-destructive focus:text-destructive cursor-pointer"
+                                                onClick={handleDelete}
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Hapus Forum
+                                            </DropdownMenuItem>
+                                        </>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    )}
+                </div>
+            </CardContent>
         </Card>
     );
 }

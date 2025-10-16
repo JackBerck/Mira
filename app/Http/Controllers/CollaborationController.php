@@ -107,10 +107,64 @@ class CollaborationController extends Controller
 
     public function show(Collaboration $collaboration): \Inertia\Response|\Inertia\ResponseFactory
     {
-        $collaboration->load(['category', 'user']);
+        $collaboration->load([
+            'category', 
+            'user',
+            'collaborators.user',
+            'chats' => function ($query) {
+                $query->latest()->take(10);
+            }
+        ]);
+
+        // Transform collaborators data
+        $collaboratorsData = $collaboration->collaborators->map(function ($collaborator) {
+            return [
+                'id' => $collaborator->id,
+                'role' => $collaborator->role,
+                'user' => [
+                    'id' => $collaborator->user->id,
+                    'name' => $collaborator->user->name,
+                    'avatar' => $collaborator->user->avatar ? asset('storage/' . $collaborator->user->avatar) : null,
+                ],
+                'joined_at' => $collaborator->created_at->toISOString(),
+            ];
+        });
+
+        // Ensure skills_needed is always an array
+        $skills = $collaboration->skills_needed;
+        if (!is_array($skills)) {
+            $skills = $skills ? (is_string($skills) ? json_decode($skills, true) ?? [] : []) : [];
+        }
+
+        // Transform collaboration data
+        $collaborationData = [
+            'id' => $collaboration->id,
+            'title' => $collaboration->title,
+            'slug' => $collaboration->slug,
+            'description' => $collaboration->description,
+            'skills_needed' => $skills,
+            'status' => $collaboration->status,
+            'image' => $collaboration->image ? asset('storage/' . $collaboration->image) : null,
+            'forum_category_id' => $collaboration->forum_category_id,
+            'category' => [
+                'id' => $collaboration->category->id,
+                'name' => $collaboration->category->name,
+                'slug' => $collaboration->category->slug,
+            ],
+            'user' => [
+                'id' => $collaboration->user->id,
+                'name' => $collaboration->user->name,
+                'avatar' => $collaboration->user->avatar ? asset('storage/' . $collaboration->user->avatar) : null,
+            ],
+            'collaborators' => $collaboratorsData,
+            'collaborators_count' => $collaboration->collaborators->count(),
+            'chats_count' => $collaboration->chats->count(),
+            'created_at' => $collaboration->created_at->toISOString(),
+            'updated_at' => $collaboration->updated_at->toISOString(),
+        ];
 
         return inertia('collaboration/show/page', [
-            'collaboration' => $collaboration,
+            'collaboration' => $collaborationData,
         ]);
     }
 
@@ -143,6 +197,17 @@ class CollaborationController extends Controller
 
     public function destroy(Collaboration $collaboration): \Illuminate\Http\RedirectResponse
     {
+        // Check if user is owner or admin
+        $user = auth()->user();
+        
+        if (!$user) {
+            abort(401, 'Unauthorized');
+        }
+        
+        if ($collaboration->user_id !== $user->id && !$user->hasRole('admin')) {
+            abort(403, 'Anda tidak memiliki izin untuk menghapus kolaborasi ini.');
+        }
+
         $collaboration->delete();
 
         return redirect()->route('collaboration.index')
