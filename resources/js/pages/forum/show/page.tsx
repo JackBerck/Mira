@@ -119,6 +119,11 @@ export default function ForumShowPage({
         });
     };
 
+    const handleEditComment = (commentId: number, content: string) => {
+        setEditingCommentId(commentId);
+        setEditContent(content);
+    };
+
     const handleDeleteComment = (commentId: number) => {
         router.delete(`/beranda/forum/${forum.id}/comment/${commentId}`, {
             preserveScroll: true,
