@@ -5,15 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ProfileLayout from '@/layouts/profile-layout';
+import { parseArray } from '@/utils/helpers';
 import { useForm } from '@inertiajs/react';
 import { Check, Plus, Star, X } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface SkillsInterestsProps {
     user: {
         name: string;
-        skills: string[];
-        interests: string[];
+        skills: string[] | string;
+        interests: string[] | string;
     };
     status?: string;
 }
@@ -60,11 +61,17 @@ export default function SkillsInterests({
 }: SkillsInterestsProps) {
     const [skillInput, setSkillInput] = useState('');
     const [interestInput, setInterestInput] = useState('');
-    console.log(user);
+
+    // Parse skills and interests safely
+    const userSkills = useMemo(() => parseArray(user.skills), [user.skills]);
+    const userInterests = useMemo(
+        () => parseArray(user.interests),
+        [user.interests],
+    );
 
     const { data, setData, put, processing, errors } = useForm({
-        skills: user.skills || [],
-        interests: user.interests || [],
+        skills: userSkills,
+        interests: userInterests,
     });
 
     const addSkill = (skill: string) => {

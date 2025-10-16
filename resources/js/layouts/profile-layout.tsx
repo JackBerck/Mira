@@ -23,19 +23,19 @@ interface ProfileLayoutProps {
 const profileNavItems = [
     {
         title: 'Kelola Akun',
-        href: '/profil',
+        href: '/profile',
         icon: User,
         description: 'Informasi dasar dan pengaturan akun',
     },
     {
         title: 'Keahlian & Minat',
-        href: '/profil/keterampilan-dan-minat',
+        href: '/profile/skills-interests',
         icon: Award,
         description: 'Skills, interests, dan expertise area',
     },
     {
-        title: 'Portofolio',
-        href: '/profil/portofolio',
+        title: 'Portfolio',
+        href: '/profile/portfolio',
         icon: Briefcase,
         description: 'Showcase karya dan pencapaian',
     },
@@ -44,31 +44,31 @@ const profileNavItems = [
 const activityNavItems = [
     {
         title: 'Forum Saya',
-        href: '/profil/forum-saya',
+        href: '/profile/my-forums',
         icon: MessageSquare,
         count: 12,
     },
     {
         title: 'Kolaborasi Saya',
-        href: '/profil/kolaborasi-saya',
+        href: '/profile/my-collaborations',
         icon: Users,
         count: 5,
     },
     {
         title: 'Forum Disukai',
-        href: '/profil/forum-disukai',
+        href: '/profile/liked-forums',
         icon: Heart,
         count: 34,
     },
     {
         title: 'Forum Dikomentari',
-        href: '/profil/forum-dikomentari',
+        href: '/profile/commented-forums',
         icon: MessageCircle,
         count: 18,
     },
     {
         title: 'Kolaborasi Diikuti',
-        href: '/profil/kolaborasi-diikuti',
+        href: '/profile/following-collaborations',
         icon: UserCheck,
         count: 8,
     },
@@ -81,8 +81,8 @@ export default function ProfileLayout({ children, title }: ProfileLayoutProps) {
     const user = auth?.user;
 
     const isActive = (href: string) => {
-        if (href === '/profil') {
-            return url === '/profil';
+        if (href === '/profile') {
+            return url === '/profile';
         }
         return url.startsWith(href);
     };

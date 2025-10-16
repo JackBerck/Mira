@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Models\PortfolioItem;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,8 +43,10 @@ class ProfileController extends Controller
      */
     public function portfolio(Request $request): Response
     {
-        // In future, load from portfolio model
-        $portfolioItems = []; // Load from database
+        $portfolioItems = $request->user()
+            ->portfolioItems()
+            ->orderBy('date', 'desc')
+            ->get();
 
         return Inertia::render('profile/portfolio', [
             'portfolioItems' => $portfolioItems,
@@ -81,6 +84,23 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the user's password.
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        $request->user()->update([
+            'password' => bcrypt($request->password),
+        ]);
+
+        return back()->with('status', 'password-updated');
+    }
+
+    /**
      * Update skills and interests.
      */
     public function updateSkillsInterests(Request $request): RedirectResponse
@@ -98,6 +118,88 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('status', 'skills-updated');
+    }
+
+    /**
+     * Store a new portfolio item.
+     */
+    public function storePortfolio(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'url' => 'nullable|url',
+            'image' => 'nullable|image|max:2048',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50',
+            'type' => 'required|in:project,achievement,experience',
+            'date' => 'required|date',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('portfolio-images', 'public');
+        }
+
+        $request->user()->portfolioItems()->create($validated);
+
+        return back()->with('status', 'portfolio-updated');
+    }
+
+    /**
+     * Update a portfolio item.
+     */
+    public function updatePortfolio(Request $request, PortfolioItem $portfolioItem): RedirectResponse
+    {
+        // Check authorization
+        if ($portfolioItem->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'url' => 'nullable|url',
+            'image' => 'nullable|image|max:2048',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50',
+            'type' => 'required|in:project,achievement,experience',
+            'date' => 'required|date',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($portfolioItem->image) {
+                Storage::disk('public')->delete($portfolioItem->image);
+            }
+
+            $validated['image'] = $request->file('image')->store('portfolio-images', 'public');
+        }
+
+        $portfolioItem->update($validated);
+
+        return back()->with('status', 'portfolio-updated');
+    }
+
+    /**
+     * Delete a portfolio item.
+     */
+    public function destroyPortfolio(Request $request, PortfolioItem $portfolioItem): RedirectResponse
+    {
+        // Check authorization
+        if ($portfolioItem->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        // Delete image if exists
+        if ($portfolioItem->image) {
+            Storage::disk('public')->delete($portfolioItem->image);
+        }
+
+        $portfolioItem->delete();
+
+        return back()->with('status', 'portfolio-updated');
     }
 
     /**

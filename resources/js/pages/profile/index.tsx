@@ -1,3 +1,4 @@
+import UpdatePasswordForm from '@/components/profile/update-password-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -73,6 +74,15 @@ export default function Profile({
                         <Check className="h-4 w-4 text-green-600" />
                         <AlertDescription className="text-green-800">
                             Profile berhasil diperbarui!
+                        </AlertDescription>
+                    </Alert>
+                )}
+
+                {status === 'password-updated' && (
+                    <Alert className="border-green-200 bg-green-50">
+                        <Check className="h-4 w-4 text-green-600" />
+                        <AlertDescription className="text-green-800">
+                            Password berhasil diubah!
                         </AlertDescription>
                     </Alert>
                 )}
@@ -285,23 +295,7 @@ export default function Profile({
                                     Terakhir diubah 3 bulan yang lalu
                                 </p>
                             </div>
-                            <Button variant="outline" size="sm">
-                                Ubah Password
-                            </Button>
-                        </div>
-
-                        <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
-                            <div>
-                                <h4 className="font-medium text-gray-900">
-                                    Two-Factor Authentication
-                                </h4>
-                                <p className="text-sm text-gray-600">
-                                    Tambahan keamanan untuk akun Anda
-                                </p>
-                            </div>
-                            <Button variant="outline" size="sm">
-                                Aktifkan 2FA
-                            </Button>
+                            <UpdatePasswordForm />
                         </div>
                     </CardContent>
                 </Card>

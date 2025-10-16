@@ -3,6 +3,7 @@
 use App\Http\Controllers\CollaborationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IdeaInsightController;
+use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -41,10 +42,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Profile
-    Route::get('profil', [\App\Http\Controllers\Settings\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('profil/keterampilan-dan-minat', [\App\Http\Controllers\Settings\ProfileController::class, 'skillsInterests'])->name('profile.skills-interests');
-    Route::get('profil/portofolio', [\App\Http\Controllers\Settings\ProfileController::class, 'portfolio'])->name('profile.portfolio');
-    Route::patch('profil', [\App\Http\Controllers\Settings\ProfileController::class, 'update'])->name('profile.update');
+    // Profile Routes
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('/', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // Update Password
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+        // Skills & Interests
+        Route::get('/skills-interests', [ProfileController::class, 'skillsInterests'])->name('profile.skills-interests');
+        Route::put('/skills-interests', [ProfileController::class, 'updateSkillsInterests'])->name('profile.skills-interests.update');
+
+        // Portfolio
+        Route::get('/portfolio', [ProfileController::class, 'portfolio'])->name('profile.portfolio');
+        Route::post('/portfolio', [ProfileController::class, 'storePortfolio'])->name('profile.portfolio.store');
+        Route::put('/portfolio/{portfolioItem}', [ProfileController::class, 'updatePortfolio'])->name('profile.portfolio.update');
+        Route::delete('/portfolio/{portfolioItem}', [ProfileController::class, 'destroyPortfolio'])->name('profile.portfolio.destroy');
+    });
 });
 
 // Collaboration Routes
