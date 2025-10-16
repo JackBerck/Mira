@@ -3,15 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import ProfileLayout from '@/layouts/profile-layout';
 import { Link, router } from '@inertiajs/react';
-import {
-    Calendar,
-    Edit,
-    Eye,
-    Heart,
-    MessageSquare,
-    Plus,
-    Trash2,
-} from 'lucide-react';
+import { Calendar, Eye, Heart, MessageSquare, User } from 'lucide-react';
 
 interface Forum {
     id: number;
@@ -31,40 +23,29 @@ interface Forum {
     };
     likes_count: number;
     comments_count: number;
+    user_comments_count: number;
     created_at: string;
-    updated_at: string;
+    last_commented_at: string;
 }
 
-interface MyForumsProps {
-    forums: {
+interface CommentedForumsProps {
+    commentedForums: {
         data: Forum[];
         current_page: number;
         last_page: number;
         per_page: number;
         total: number;
     };
+    userId: number;
 }
 
-export default function MyForums({ forums }: MyForumsProps) {
-    // Ensure data exists
-    const forumsData = forums?.data || [];
-    const forumsTotal = forums?.total || 0;
-    const forumsCurrentPage = forums?.current_page || 1;
-    const forumsLastPage = forums?.last_page || 1;
-
-    const handleDelete = (forumId: number, title: string) => {
-        if (
-            confirm(
-                `Yakin ingin menghapus forum "${title}"? Tindakan ini tidak dapat dibatalkan.`,
-            )
-        ) {
-            router.delete(`/beranda/forum/${forumId}`, {
-                onSuccess: () => {
-                    router.reload({ only: ['forums'] });
-                },
-            });
-        }
-    };
+export default function CommentedForums({
+    commentedForums,
+}: CommentedForumsProps) {
+    const forumsData = commentedForums?.data || [];
+    const forumsTotal = commentedForums?.total || 0;
+    const forumsCurrentPage = commentedForums?.current_page || 1;
+    const forumsLastPage = commentedForums?.last_page || 1;
 
     const formatDate = (dateString: string) => {
         try {
@@ -79,26 +60,19 @@ export default function MyForums({ forums }: MyForumsProps) {
     };
 
     return (
-        <ProfileLayout title="Forum Saya">
+        <ProfileLayout title="Forum yang Dikomentari">
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
                         <h2 className="text-xl font-semibold text-gray-900">
-                            Forum yang Saya Buat
+                            Forum yang Dikomentari
                         </h2>
                         <p className="text-gray-600">
-                            Kelola semua forum diskusi yang telah Anda buat (
+                            Semua forum diskusi yang telah Anda komentari (
                             {forumsTotal} total)
                         </p>
                     </div>
-
-                    <Link href="/beranda/forum/buat">
-                        <Button className="bg-blue-600 hover:bg-blue-700">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Buat Forum Baru
-                        </Button>
-                    </Link>
                 </div>
 
                 {/* Forums List */}
@@ -145,6 +119,11 @@ export default function MyForums({ forums }: MyForumsProps) {
                                                                 'Tanpa Kategori'}
                                                         </Badge>
                                                         <div className="flex items-center">
+                                                            <User className="mr-1 h-3 w-3" />
+                                                            {forum.user?.name ||
+                                                                'Anonymous'}
+                                                        </div>
+                                                        <div className="flex items-center">
                                                             <Calendar className="mr-1 h-3 w-3" />
                                                             {formatDate(
                                                                 forum.created_at,
@@ -153,7 +132,7 @@ export default function MyForums({ forums }: MyForumsProps) {
                                                     </div>
                                                 </div>
 
-                                                {/* Actions */}
+                                                {/* Action */}
                                                 <div className="ml-4 flex items-center gap-2">
                                                     <Link
                                                         href={`/beranda/forum/${forum.slug}`}
@@ -165,29 +144,6 @@ export default function MyForums({ forums }: MyForumsProps) {
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
-                                                    <Link
-                                                        href={`/beranda/forum/${forum.slug}/edit`}
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                        </Button>
-                                                    </Link>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                forum.id,
-                                                                forum.title,
-                                                            )
-                                                        }
-                                                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
                                                 </div>
                                             </div>
 
@@ -234,17 +190,32 @@ export default function MyForums({ forums }: MyForumsProps) {
                                                     </div>
                                                 )}
 
-                                            {/* Stats */}
-                                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                                                <div className="flex items-center">
-                                                    <Heart className="mr-1 h-4 w-4" />
-                                                    {forum.likes_count || 0}{' '}
-                                                    suka
+                                            {/* Stats and Comment Info */}
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                                    <div className="flex items-center">
+                                                        <Heart className="mr-1 h-4 w-4" />
+                                                        {forum.likes_count || 0}{' '}
+                                                        suka
+                                                    </div>
+                                                    <div className="flex items-center">
+                                                        <MessageSquare className="mr-1 h-4 w-4" />
+                                                        {forum.comments_count ||
+                                                            0}{' '}
+                                                        komentar
+                                                    </div>
+                                                    <div className="flex items-center text-blue-600">
+                                                        <MessageSquare className="mr-1 h-4 w-4" />
+                                                        {forum.user_comments_count ||
+                                                            0}{' '}
+                                                        komentar Anda
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center">
-                                                    <MessageSquare className="mr-1 h-4 w-4" />
-                                                    {forum.comments_count || 0}{' '}
-                                                    komentar
+                                                <div className="text-xs text-gray-400">
+                                                    Terakhir komentar{' '}
+                                                    {formatDate(
+                                                        forum.last_commented_at,
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -260,16 +231,17 @@ export default function MyForums({ forums }: MyForumsProps) {
                                 <MessageSquare className="h-8 w-8 text-gray-400" />
                             </div>
                             <h3 className="mb-2 text-lg font-medium text-gray-900">
-                                Belum Ada Forum
+                                Belum Ada Forum yang Dikomentari
                             </h3>
                             <p className="mx-auto mb-6 max-w-md text-gray-600">
-                                Anda belum membuat forum diskusi. Mulai berbagi
-                                ide dan diskusi dengan komunitas!
+                                Anda belum berkomentar di forum manapun.
+                                Bergabunglah dalam diskusi dan bagikan pendapat
+                                Anda!
                             </p>
-                            <Link href="/beranda/forum/buat">
+                            <Link href="/forum">
                                 <Button className="bg-blue-600 hover:bg-blue-700">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Buat Forum Pertama
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Jelajahi Forum
                                 </Button>
                             </Link>
                         </CardContent>
@@ -293,9 +265,10 @@ export default function MyForums({ forums }: MyForumsProps) {
                                     }
                                     size="sm"
                                     onClick={() =>
-                                        router.get('/profile/my-forums', {
-                                            page,
-                                        })
+                                        router.get(
+                                            '/profile/commented-forums',
+                                            { page },
+                                        )
                                     }
                                     className="h-10 w-10"
                                 >

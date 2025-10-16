@@ -46,35 +46,35 @@ const activityNavItems = [
         title: 'Forum Saya',
         href: '/profile/my-forums',
         icon: MessageSquare,
-        count: 12,
+        // count: 12,
     },
     {
         title: 'Kolaborasi Saya',
         href: '/profile/my-collaborations',
         icon: Users,
-        count: 5,
+        // count: 5,
     },
     {
         title: 'Forum Disukai',
         href: '/profile/liked-forums',
         icon: Heart,
-        count: 34,
+        // count: 34,
     },
     {
         title: 'Forum Dikomentari',
         href: '/profile/commented-forums',
         icon: MessageCircle,
-        count: 18,
+        // count: 18,
     },
     {
         title: 'Kolaborasi Diikuti',
-        href: '/profile/following-collaborations',
+        href: '/profile/followed-collaborations',
         icon: UserCheck,
-        count: 8,
+        // count: 8,
     },
 ];
 
-export default function ProfileLayout({ children, title }: ProfileLayoutProps) {
+export default function ProfileLayout({ children }: ProfileLayoutProps) {
     const { url } = usePage();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { auth } = usePage().props as any;
@@ -167,9 +167,9 @@ export default function ProfileLayout({ children, title }: ProfileLayoutProps) {
                                                     <item.icon className="h-4 w-4" />
                                                     <span>{item.title}</span>
                                                 </div>
-                                                <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">
+                                                {/* <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">
                                                     {item.count}
-                                                </span>
+                                                </span> */}
                                             </Link>
                                         ))}
                                     </div>
@@ -192,19 +192,7 @@ export default function ProfileLayout({ children, title }: ProfileLayoutProps) {
                     </div>
 
                     {/* Main Content */}
-                    <div className="lg:col-span-3">
-                        <div className="mb-6">
-                            <h1 className="mb-2 text-2xl font-bold text-gray-900">
-                                {title}
-                            </h1>
-                            <p className="text-gray-600">
-                                Kelola informasi profile Anda untuk pengalaman
-                                kolaborasi yang lebih baik
-                            </p>
-                        </div>
-
-                        {children}
-                    </div>
+                    <div className="lg:col-span-3">{children}</div>
                 </div>
             </div>
         </AppLayout>

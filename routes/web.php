@@ -24,15 +24,14 @@ Route::middleware('guest')->group(function () {
         return Inertia::render('introduction/contact');
     })->name('contact');
     Route::post('/kontak', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
-
 });
 
-Route::resource("test",CollaborationController::class);
+Route::resource("test", CollaborationController::class);
 
 Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
     // collaboration
-    
+
     Route::get('kolaborasi', [HomeController::class, 'collaborations'])->name('dashboard.collaborations');
     Route::get('kolaborasi/buat', [CollaborationController::class, 'create'])->name('collaboration.create');
     Route::post('kolaborasi', [CollaborationController::class, 'store'])->name('collaboration.store');
@@ -49,7 +48,6 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('forum/{forum:slug}', [ForumController::class, 'destroy'])->name('forum.destroy');
     Route::post('forum/{forum:id}/like', [ForumInteractionController::class, 'toggleLike'])->name('forum.like');
     Route::post('forum/{forum:id}/comment', [ForumInteractionController::class, 'storeComment'])->name('forum.comment');
-
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -82,6 +80,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/portfolio', [ProfileController::class, 'storePortfolio'])->name('profile.portfolio.store');
         Route::put('/portfolio/{portfolioItem}', [ProfileController::class, 'updatePortfolio'])->name('profile.portfolio.update');
         Route::delete('/portfolio/{portfolioItem}', [ProfileController::class, 'destroyPortfolio'])->name('profile.portfolio.destroy');
+
+        // Forum
+        Route::get('/my-forums', [ProfileController::class, 'myForums'])->name('profile.my-forums');
+        Route::get('/liked-forums', [ProfileController::class, 'likedForums'])->name('profile.liked-forums');
+        Route::get('/commented-forums', [ProfileController::class, 'commentedForums'])->name('profile.commented-forums');
+
+        // Collaborations
+        Route::get('/my-collaborations', [ProfileController::class, 'myCollaborations'])->name('profile.my-collaborations');
+        Route::get('/followed-collaborations', [ProfileController::class, 'followedCollaborations'])->name('profile.followed-collaborations');
     });
 });
 
@@ -92,5 +99,5 @@ Route::get('forum', [ForumController::class, 'index'])->name('forum.index');
 Route::get('kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');
 Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
