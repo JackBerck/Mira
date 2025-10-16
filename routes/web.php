@@ -39,7 +39,7 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
     Route::get('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'show'])->name('collaboration.show');
     Route::put('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'update'])->name('collaboration.update');
     Route::delete('kolaborasi/{collaboration:slug}', [CollaborationController::class, 'destroy'])->name('collaboration.destroy');
-    
+
     // Collaboration Members Management
     Route::post('kolaborasi/{collaboration:slug}/member', [CollaborationController::class, 'addMember'])->name('collaboration.member.add');
     Route::delete('kolaborasi/{collaboration:slug}/member/{collaborator}', [CollaborationController::class, 'removeMember'])->name('collaboration.member.remove');
@@ -52,8 +52,10 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
     Route::get('forum/{forum:slug}/edit', [ForumController::class, 'edit'])->name('forum.edit');
     Route::put('forum/{forum:slug}', [ForumController::class, 'update'])->name('forum.update');
     Route::delete('forum/{forum:slug}', [ForumController::class, 'destroy'])->name('forum.destroy');
-    Route::post('forum/{forum:id}/like', [ForumInteractionController::class, 'toggleLike'])->name('forum.like');
-    Route::post('forum/{forum:id}/comment', [ForumInteractionController::class, 'storeComment'])->name('forum.comment');
+    Route::post('forum/{forum}/like', [ForumInteractionController::class, 'toggleLike'])->name('forum.like');
+    Route::post('forum/{forum}/comments', [ForumInteractionController::class, 'storeComment'])->name('forum.comment');
+    Route::delete('forum/{forum}/comment/{comment}', [ForumInteractionController::class, 'deleteComment'])->name('forum.comment.delete');
+    Route::put('forum/{forum}/comment/{comment}', [ForumInteractionController::class, 'updateComment'])->name('forum.comment.update');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -62,7 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pesan/total-unread-count', [ChatController::class, 'getTotalUnreadCount'])->name('chats.total-unread-count');
     Route::get('/pesan/{collaborationId}/messages', [ChatController::class, 'getMessages'])->name('chats.messages');
     Route::get('/pesan/{collaborationId}/unread-count', [ChatController::class, 'getUnreadCount'])->name('chats.unread-count');
-    
+
     // Direct Messages
     Route::get('/direct-messages/conversations', [DirectMessageController::class, 'getConversations'])->name('direct-messages.conversations');
     Route::get('/direct-messages/{userId}/messages', [DirectMessageController::class, 'getMessages'])->name('direct-messages.messages');

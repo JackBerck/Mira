@@ -78,8 +78,6 @@ class ForumInteractionController extends Controller
 
         // Send notification to forum owner (only if not commenting on own forum)
         if ($forum->user_id !== Auth::id()) {
-            // Check if there's already an unread notification from this user for this forum
-            // within the last 5 minutes to prevent spam
             $recentNotification = $forum->user->unreadNotifications()
                 ->where('type', 'App\Notifications\ForumCommentedNotification')
                 ->whereJsonContains('data->forum_id', $forum->id)
@@ -87,12 +85,40 @@ class ForumInteractionController extends Controller
                 ->where('created_at', '>=', now()->subMinutes(5))
                 ->exists();
 
-            // Only send notification if there isn't a recent one
             if (!$recentNotification) {
-                $forum->user->notify(new ForumCommentedNotification($forum, $comment, Auth::user()));
+                $forum->user->notify(new \App\Notifications\ForumCommentedNotification($forum, $comment, Auth::user()));
             }
         }
 
-        return back()->with('status', 'Komentar berhasil ditambahkan.');
+        return back()->with('success', 'Komentar berhasil ditambahkan.');
+    }
+
+    public function deleteComment(Forum $forum, ForumComment $comment)
+    {
+        // Only the comment owner or forum owner can delete the comment
+        if (Auth::id() !== $comment->user_id && Auth::id() !== $forum->user_id) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk menghapus komentar ini.');
+        }
+
+        $comment->delete();
+        return back()->with('success', 'Komentar berhasil dihapus.');
+    }
+
+    public function updateComment(Request $request, Forum $forum, ForumComment $comment)
+    {
+        // Only the comment owner can update the comment
+        if (Auth::id() !== $comment->user_id) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk mengedit komentar ini.');
+        }
+
+        $validated = $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+
+        $comment->update([
+            'content' => $validated['content'],
+        ]);
+
+        return back()->with('success', 'Komentar berhasil diperbarui.');
     }
 }

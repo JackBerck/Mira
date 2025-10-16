@@ -1,9 +1,42 @@
-import AppLayout from '@/layouts/app-layout';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import {
+    Calendar,
+    Edit,
+    Heart,
+    MessageSquare,
+    Share2,
+    Tag,
+    Trash2,
+} from 'lucide-react';
+import { useState } from 'react';
+
+interface Comment {
+    id: number;
+    content: string;
+    created_at: string;
+    user: {
+        id: number;
+        name: string;
+        avatar: string;
+    };
+    is_owner: boolean;
+}
 
 interface Forum {
     id: number;
@@ -11,15 +44,16 @@ interface Forum {
     description: string;
     image: string | null;
     tags: string[];
-    category: { name: string };
-    slug: string;
-    user: { name: string };
-    comments: {
+    category: {
         id: number;
-        content: string;
-        created_at: string;
-        user: { name: string };
-    }[];
+        name: string;
+        slug: string;
+    };
+    user: {
+        id: number;
+        name: string;
+        avatar: string;
+    };
     likes_count: number;
     comments_count: number;
     created_at: string;
@@ -27,124 +61,398 @@ interface Forum {
 
 interface ForumShowProps {
     forum: Forum;
+    comments: Comment[];
     isLiked: boolean;
+    currentUserId: number | null;
+    isAuthenticated: boolean;
 }
 
-export default function ForumShowPage({ forum, isLiked }: ForumShowProps) {
-    const page = usePage();
-    const { auth } = (page.props as unknown) as { auth: { user: { id: number; name: string } | null } };
+export default function ForumShowPage({
+    forum,
+    comments,
+    isLiked,
+    isAuthenticated,
+}: ForumShowProps) {
+    const [liked, setLiked] = useState(isLiked);
+    const [likesCount, setLikesCount] = useState(forum.likes_count);
+    const [editingCommentId, setEditingCommentId] = useState<number | null>(
+        null,
+    );
+    const [editContent, setEditContent] = useState('');
 
-    const { post: toggleLike, processing: liking } = useForm();
-    
-    const { data, setData, post: postComment, processing: commenting, errors, reset } = useForm({
+    const { data, setData, post, processing, reset } = useForm({
         content: '',
     });
 
     const handleLike = () => {
-        toggleLike(`/beranda/forum/${forum.id}/like`, { preserveScroll: true });
+        if (!isAuthenticated) {
+            router.visit('/login');
+            return;
+        }
+
+        router.post(
+            `/beranda/forum/${forum.id}/like`,
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setLiked(!liked);
+                    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+                },
+            },
+        );
     };
 
-    const submitComment = (e: React.FormEvent) => {
+    const handleComment = (e: React.FormEvent) => {
         e.preventDefault();
-        postComment(`/beranda/forum/${forum.id}/comment`, {
+
+        if (!isAuthenticated) {
+            router.visit('/login');
+            return;
+        }
+
+        post(`/beranda/forum/${forum.id}/comments`, {
             preserveScroll: true,
-            onSuccess: () => reset('content'), 
+            onSuccess: () => {
+                reset();
+            },
         });
+    };
+
+    const handleDeleteComment = (commentId: number) => {
+        router.delete(`/beranda/forum/${forum.id}/comment/${commentId}`, {
+            preserveScroll: true,
+        });
+    };
+
+    const handleUpdateComment = (commentId: number) => {
+        router.put(
+            `/beranda/forum/${forum.id}/comment/${commentId}`,
+            { content: editContent },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setEditingCommentId(null);
+                    setEditContent('');
+                },
+            },
+        );
+    };
+
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: forum.title,
+                text: forum.description,
+                url: window.location.href,
+            });
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link berhasil disalin!');
+        }
     };
 
     return (
         <AppLayout>
-            <main className="container mx-auto px-12 py-8 md:py-12">
-                <header>
-                    <div className="flex items-center justify-between">
-                        <Link href={'/beranda'} className="text-sm text-primary hover:underline">
-                            &larr; Kembali ke Forum
-                        </Link>
-                        {/* Logika untuk tombol "Bentuk Tim" */}
-                    </div>
-                    <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
-                        <div>
-                            <h1 className="mt-4 text-3xl font-bold md:text-4xl">{forum.title}</h1>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                Diposting oleh {forum.user.name} pada {new Date(forum.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+            <Head title={forum.title} />
+
+            <div className="mx-auto max-w-4xl px-4 py-8">
+                {/* Back Button */}
+                <Link
+                    href="/forum"
+                    className="mb-6 inline-flex items-center text-sm text-gray-600 transition-colors hover:text-gray-900"
+                >
+                    ← Kembali ke Forum
+                </Link>
+
+                {/* Forum Header */}
+                <Card className="mb-6 border-0 shadow-sm">
+                    <CardContent className="p-6">
+                        {/* Category Badge */}
+                        <Badge variant="outline" className="mb-4">
+                            {forum.category.name}
+                        </Badge>
+
+                        {/* Title */}
+                        <h1 className="mb-4 text-3xl font-bold text-gray-900">
+                            {forum.title}
+                        </h1>
+
+                        {/* Meta Info */}
+                        <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                                <img
+                                    src={forum.user.avatar}
+                                    alt={forum.user.name}
+                                    className="h-8 w-8 rounded-full object-cover"
+                                />
+                                <span className="font-medium">
+                                    {forum.user.name}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4" />
+                                {forum.created_at}
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Heart className="h-4 w-4" />
+                                {likesCount} Suka
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <MessageSquare className="h-4 w-4" />
+                                {comments.length} Komentar
+                            </div>
+                        </div>
+
+                        {/* Image */}
+                        {forum.image && (
+                            <div className="mb-6 overflow-hidden rounded-lg">
+                                <img
+                                    src={forum.image}
+                                    alt={forum.title}
+                                    className="h-96 w-full object-cover"
+                                />
+                            </div>
+                        )}
+
+                        {/* Description */}
+                        <div className="prose prose-sm mb-6 max-w-none">
+                            <p className="whitespace-pre-wrap text-gray-700">
+                                {forum.description}
                             </p>
                         </div>
-                        <Button asChild>
-                            <Link href="/beranda/kolaborasi/buat">Buat Tim </Link>
-                        </Button>
-                    </div>
-                    
-                    <div className="mt-4 flex flex-wrap items-center gap-2">
-                        <Badge variant="secondary">{forum.category.name}</Badge>
-                        {(Array.isArray(forum.tags) ? forum.tags : []).map((tag) => (
-                            <Badge key={tag} variant="outline">{tag}</Badge>
-                        ))}
-                    </div>
-                </header>
 
-                {/* Konten Artikel */}
-                {forum.image && <img src={'/storage/' + forum.image} alt={forum.title} className="mt-8 h-100 w-full max-w-xl rounded-lg object-cover" />}
-                <article className="prose mt-8 max-w-4xl dark:prose-invert">
-                    <p>{forum.description}</p>
-                </article>
-
-                {/* Aksi Like */}
-                <section className="mt-8 flex items-center gap-4 border-y py-4">
-                    <Button onClick={handleLike} variant={isLiked ? "default" : "outline"} disabled={liking}>
-                        👍 {isLiked ? 'Disukai' : 'Suka'} ({forum.likes_count})
-                    </Button>
-                    <span className="text-sm text-muted-foreground">💬 {forum.comments_count} Komentar</span>
-                </section>
-
-                {/* Bagian Komentar */}
-                <section className="mt-12 max-w-3xl">
-                    <h2 className="text-2xl font-semibold">Diskusi ({forum.comments_count})</h2>
-
-                    {/* Form Komentar */}
-                    {auth.user ? (
-                        <form onSubmit={submitComment} className="mt-6 flex flex-col">
-                            <Label htmlFor="content">Tulis Komentar Anda</Label>
-                            <textarea
-                                id="content"
-                                value={data.content}
-                                onChange={(e) => setData('content', e.target.value)}
-                                className="mt-2 border border-muted-foreground bg-transparent p-2 rounded-md"
-                                rows={4}
-                                placeholder="Bagikan pendapat Anda..."
-                            />
-                            {errors.content && <p className="mt-1 text-sm text-red-500">{errors.content}</p>}
-                            <Button type="submit" className="mt-4 self-end" disabled={commenting}>
-                                {commenting ? 'Mengirim...' : 'Kirim Komentar'}
-                            </Button>
-                        </form>
-                    ) : (
-                        <p className="mt-6 text-sm text-muted-foreground">
-                            <Link href="/login" className="text-primary hover:underline">Masuk</Link> untuk berpartisipasi dalam diskusi.
-                        </p>
-                    )}
-
-
-                    {/* Daftar Komentar */}
-                    <div className="mt-8 space-y-6">
-                        {forum.comments.map((comment) => (
-                            <Card key={comment.id}>
-                                <CardHeader className="flex flex-row items-center justify-between p-4">
-                                    <span className="font-semibold">{comment.user.name}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {new Date(comment.created_at).toLocaleString('id-ID')}
-                                    </span>
-                                </CardHeader>
-                                <CardContent className="p-4 pt-0">
-                                    <p className="text-sm">{comment.content}</p>
-                                </CardContent>
-                            </Card>
-                        ))}
-                        {forum.comments.length === 0 && (
-                            <p className="py-8 text-center text-sm text-muted-foreground">Jadilah yang pertama berkomentar!</p>
+                        {/* Tags */}
+                        {forum.tags && forum.tags.length > 0 && (
+                            <div className="mb-6 flex flex-wrap gap-2">
+                                {forum.tags.map((tag, index) => (
+                                    <Badge
+                                        key={index}
+                                        variant="secondary"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <Tag className="h-3 w-3" />
+                                        {tag}
+                                    </Badge>
+                                ))}
+                            </div>
                         )}
-                    </div>
-                </section>
-            </main>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                            <Button
+                                onClick={handleLike}
+                                variant={liked ? 'default' : 'outline'}
+                                className={
+                                    liked ? 'bg-red-500 hover:bg-red-600' : ''
+                                }
+                            >
+                                <Heart
+                                    className={`mr-2 h-4 w-4 ${
+                                        liked ? 'fill-current' : ''
+                                    }`}
+                                />
+                                {liked ? 'Disukai' : 'Suka'}
+                            </Button>
+                            <Button variant="outline" onClick={handleShare}>
+                                <Share2 className="mr-2 h-4 w-4" />
+                                Bagikan
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Comments Section */}
+                <Card className="border-0 shadow-sm">
+                    <CardContent className="p-6">
+                        <h2 className="mb-6 text-xl font-semibold">
+                            Komentar ({comments.length})
+                        </h2>
+
+                        {/* Comment Form */}
+                        {isAuthenticated ? (
+                            <form onSubmit={handleComment} className="mb-6">
+                                <Textarea
+                                    placeholder="Tulis komentar Anda..."
+                                    value={data.content}
+                                    onChange={(e) =>
+                                        setData('content', e.target.value)
+                                    }
+                                    className="mb-3"
+                                    rows={3}
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={
+                                        processing || !data.content.trim()
+                                    }
+                                    className="bg-blue-600 hover:bg-blue-700"
+                                >
+                                    <MessageSquare className="mr-2 h-4 w-4" />
+                                    Kirim Komentar
+                                </Button>
+                            </form>
+                        ) : (
+                            <div className="mb-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 text-center">
+                                <p className="mb-3 text-gray-600">
+                                    Silakan login untuk berkomentar
+                                </p>
+                                <Link href="/login">
+                                    <Button className="bg-blue-600 hover:bg-blue-700">
+                                        Login
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
+
+                        {/* Comments List */}
+                        <div className="space-y-4">
+                            {comments.length > 0 ? (
+                                comments.map((comment) => (
+                                    <div
+                                        key={comment.id}
+                                        className="rounded-lg border border-gray-200 bg-gray-50 p-4"
+                                    >
+                                        <div className="mb-3 flex items-start justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <img
+                                                    src={comment.user.avatar}
+                                                    alt={comment.user.name}
+                                                    className="h-10 w-10 rounded-full object-cover"
+                                                />
+                                                <div>
+                                                    <p className="font-medium text-gray-900">
+                                                        {comment.user.name}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {comment.created_at}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Action buttons for comment owner */}
+                                            {comment.is_owner && (
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            handleEditComment(
+                                                                comment.id,
+                                                                comment.content,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger
+                                                            asChild
+                                                        >
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>
+                                                                    Hapus
+                                                                    Komentar?
+                                                                </AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Tindakan ini
+                                                                    tidak dapat
+                                                                    dibatalkan.
+                                                                    Komentar
+                                                                    akan dihapus
+                                                                    secara
+                                                                    permanen.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>
+                                                                    Batal
+                                                                </AlertDialogCancel>
+                                                                <AlertDialogAction
+                                                                    onClick={() =>
+                                                                        handleDeleteComment(
+                                                                            comment.id,
+                                                                        )
+                                                                    }
+                                                                    className="bg-red-600 hover:bg-red-700"
+                                                                >
+                                                                    Hapus
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Comment content or edit form */}
+                                        {editingCommentId === comment.id ? (
+                                            <div className="mt-3">
+                                                <Textarea
+                                                    value={editContent}
+                                                    onChange={(e) =>
+                                                        setEditContent(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    className="mb-2"
+                                                    rows={3}
+                                                />
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            handleUpdateComment(
+                                                                comment.id,
+                                                            )
+                                                        }
+                                                        className="bg-blue-600 hover:bg-blue-700"
+                                                    >
+                                                        Simpan
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                            setEditingCommentId(
+                                                                null,
+                                                            );
+                                                            setEditContent('');
+                                                        }}
+                                                    >
+                                                        Batal
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <p className="whitespace-pre-wrap text-gray-700">
+                                                {comment.content}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="py-12 text-center text-gray-500">
+                                    <MessageSquare className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+                                    <p>Belum ada komentar</p>
+                                    <p className="text-sm">
+                                        Jadilah yang pertama berkomentar!
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </AppLayout>
     );
 }
