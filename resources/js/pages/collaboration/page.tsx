@@ -4,7 +4,7 @@ import {
     type CollabFilterState,
 } from '@/components/collab/collab-filters';
 import { Button } from '@/components/ui/button';
-import Layout from '@/layouts';
+import AppLayout from '@/layouts/app-layout';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -113,7 +113,7 @@ export default function KolaborasiPage() {
     });
 
     return (
-        <Layout>
+        <AppLayout>
             <main className="container mx-auto space-y-6 px-4 py-8 md:py-12">
                 <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>
@@ -178,6 +178,6 @@ export default function KolaborasiPage() {
                     )}
                 </section>
             </main>
-        </Layout>
+        </AppLayout>
     );
 }
