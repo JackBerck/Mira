@@ -5,18 +5,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Link, router, usePage } from '@inertiajs/react';
-import {
-    Clock,
-    Flag,
-    Heart,
-    MessageCircle,
-    MoreVertical,
-    Trash2,
-} from 'lucide-react';
+import { Clock, Flag, Heart, MessageCircle, MoreVertical } from 'lucide-react';
 import { useState } from 'react';
 import AdminReport from '../admin-report';
 import {
@@ -38,17 +30,6 @@ export function ForumListItem({ forum }: { forum: Forum }) {
         auth: { user?: { id: number; role?: string } };
     }>();
     const currentUser = props.auth?.user;
-
-    // Check if user can delete (owner or admin)
-    const canDelete =
-        currentUser &&
-        (currentUser.id === forum.user.id || currentUser.role === 'admin');
-
-    const handleDeleteClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setOpenDelete(true);
-    };
 
     const handleConfirmDelete = () => {
         router.delete(`/beranda/forum/${forum.slug}`, {
@@ -252,19 +233,6 @@ export function ForumListItem({ forum }: { forum: Forum }) {
                                             <Flag className="mr-2 h-4 w-4" />
                                             Laporkan ke Admin
                                         </DropdownMenuItem>
-
-                                        {canDelete && (
-                                            <>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    className="cursor-pointer text-destructive focus:text-destructive"
-                                                    onClick={handleDeleteClick}
-                                                >
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Hapus Forum
-                                                </DropdownMenuItem>
-                                            </>
-                                        )}
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>

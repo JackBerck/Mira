@@ -13,14 +13,12 @@ import { Input } from '@/components/ui/input';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Link, router, usePage } from '@inertiajs/react';
 import {
-    Bookmark,
     ChevronDown,
     Edit3,
     LogOut,
     Menu,
     MessageCircle,
     Search,
-    Settings,
     TrendingUp,
     User,
     X,
@@ -368,7 +366,7 @@ export function TopNavbar() {
                                     className="cursor-pointer"
                                 >
                                     <MessageCircle className="mr-2 h-4 w-4" />
-                                    <span>New Forum Post</span>
+                                    <span>Buat Forum</span>
                                 </Link>
                             </DropdownMenuItem>
 
@@ -378,7 +376,7 @@ export function TopNavbar() {
                                     className="cursor-pointer"
                                 >
                                     <User className="mr-2 h-4 w-4" />
-                                    <span>Start Collaboration</span>
+                                    <span>Mulai Kolaborasi</span>
                                 </Link>
                             </DropdownMenuItem>
 

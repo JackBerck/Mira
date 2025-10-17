@@ -181,33 +181,73 @@ class ForumController extends Controller
         ]);
     }
 
-    public function edit(Forum $forum)
+    public function edit($slug)
     {
-        // $this->authorize('update', $forum);
-        return Inertia::render('forum/buat/page', [
-            'initial' => $forum->load('category'),
+        $forum = Forum::where('slug', $slug)->firstOrFail();
+
+        // Check if user is owner or admin
+        $user = auth()->user();
+        if (!$user) {
+            abort(401, 'Unauthorized');
+        }
+
+        if ($forum->user_id !== $user->id && !$user->hasRole('admin')) {
+            abort(403, 'Anda tidak memiliki izin untuk mengedit forum ini.');
+        }
+
+        // Parse tags if it's a string
+        $tags = $forum->tags;
+        if (is_string($tags)) {
+            $tags = json_decode($tags, true) ?? [];
+        }
+        if (!is_array($tags)) {
+            $tags = [];
+        }
+
+        return Inertia::render('forum/edit/page', [
+            'initial' => [
+                'title' => $forum->title,
+                'slug' => $forum->slug,
+                'description' => $forum->description,
+                'forum_category_id' => $forum->forum_category_id,
+                'tags' => $tags,
+                'image' => $forum->image ? asset('storage/' . $forum->image) : null,
+            ],
             'categories' => ForumCategory::all(['id', 'name']),
         ]);
     }
 
-    public function update(Request $request, Forum $forum)
+    public function update(Request $request, $slug)
     {
-        // $this->authorize('update', $forum);
+        $forum = Forum::where('slug', $slug)->firstOrFail();
+
+        // Check if user is owner or admin
+        $user = auth()->user();
+        if (!$user) {
+            abort(401, 'Unauthorized');
+        }
+
+        if ($forum->user_id !== $user->id && !$user->hasRole('admin')) {
+            abort(403, 'Anda tidak memiliki izin untuk mengedit forum ini.');
+        }
 
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'forum_category_id' => ['required', 'exists:forum_categories,id'],
-            'tags' => ['nullable', 'array'],
-            'tags.*' => ['string', 'max:50'],
-            'image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'forum_category_id' => 'required|exists:forum_categories,id',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Generate new slug if title changed
         if ($forum->title !== $validated['title']) {
             $validated['slug'] = Str::slug($validated['title']) . '-' . $forum->id;
         }
 
+        // Handle image upload
         if ($request->hasFile('image')) {
+            // Delete old image if exists
             if ($forum->image) {
                 Storage::disk('public')->delete($forum->image);
             }
@@ -216,14 +256,16 @@ class ForumController extends Controller
 
         $forum->update($validated);
 
-        return redirect()->route('forum.show', $forum)->with('success', 'Topik forum berhasil diperbarui!');
+        return redirect()->route('forum.show', $forum->slug)
+            ->with('success', 'Forum berhasil diperbarui!');
     }
 
-    public function destroy(Forum $forum)
+    public function destroy($slug)
     {
+        $forum = Forum::where('slug', $slug)->firstOrFail();
+
         // Check if user is owner or admin
         $user = auth()->user();
-
         if (!$user) {
             abort(401, 'Unauthorized');
         }
@@ -232,12 +274,14 @@ class ForumController extends Controller
             abort(403, 'Anda tidak memiliki izin untuk menghapus forum ini.');
         }
 
+        // Delete image if exists
         if ($forum->image) {
             Storage::disk('public')->delete($forum->image);
         }
 
         $forum->delete();
 
-        return redirect()->route('dashboard')->with('success', 'Topik forum berhasil dihapus!');
+        return redirect()->route('dashboard')
+            ->with('success', 'Forum berhasil dihapus!');
     }
 }

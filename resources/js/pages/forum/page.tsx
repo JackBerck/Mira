@@ -1,11 +1,14 @@
-import { Link, router } from '@inertiajs/react';
-import Layout from '@/layouts';
-import { Button } from '@/components/ui/button';
 import ForumCardLanding from '@/components/forum/forum-card-landing';
-import { ForumFilters, ForumFilterState } from '@/components/forum/forum-filters';
-import { useState, useEffect, useRef } from 'react';
+import {
+    ForumFilters,
+    ForumFilterState,
+} from '@/components/forum/forum-filters';
+import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
-import pickBy from 'lodash/pickBy'; 
+import AppLayout from '@/layouts/app-layout';
+import { Link, router } from '@inertiajs/react';
+import pickBy from 'lodash/pickBy';
+import { useEffect, useRef, useState } from 'react';
 
 interface ForumPost {
     id: number;
@@ -42,7 +45,11 @@ interface ForumIndexProps {
     filters: ForumFilterState;
 }
 
-export default function ForumIndexPage({ forums, categories, filters }: ForumIndexProps) {
+export default function ForumIndexPage({
+    forums,
+    categories,
+    filters,
+}: ForumIndexProps) {
     const [filterValues, setFilterValues] = useState<ForumFilterState>({
         search: filters.search || '',
         category: filters.category || 'all',
@@ -58,7 +65,7 @@ export default function ForumIndexPage({ forums, categories, filters }: ForumInd
         }
 
         const handler = setTimeout(() => {
-            const query = pickBy(filterValues); 
+            const query = pickBy(filterValues);
 
             router.get('/forum', query, {
                 preserveState: true,
@@ -67,15 +74,19 @@ export default function ForumIndexPage({ forums, categories, filters }: ForumInd
         }, 300);
 
         return () => clearTimeout(handler);
-    }, [filterValues]); 
+    }, [filterValues]);
 
     return (
-        <Layout>
+        <AppLayout>
             <main className="container mx-auto px-12 py-8 md:py-12">
                 <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h1 className="text-2xl font-semibold md:text-3xl">Forum Ide & Diskusi</h1>
-                        <p className="text-muted-foreground">Temukan topik menarik atau bagikan ide brilian Anda.</p>
+                        <h1 className="text-2xl font-semibold md:text-3xl">
+                            Forum Ide & Diskusi
+                        </h1>
+                        <p className="text-muted-foreground">
+                            Temukan topik menarik atau bagikan ide brilian Anda.
+                        </p>
                     </div>
                     <Button asChild>
                         <Link href="/forum/buat">Buat Topik Baru</Link>
@@ -87,7 +98,12 @@ export default function ForumIndexPage({ forums, categories, filters }: ForumInd
                         value={filterValues}
                         categories={categories}
                         onChange={setFilterValues}
-                        onApply={() => router.get('/forum', pickBy(filterValues), { preserveState: true, replace: true })}
+                        onApply={() =>
+                            router.get('/forum', pickBy(filterValues), {
+                                preserveState: true,
+                                replace: true,
+                            })
+                        }
                     />
                 </section>
 
@@ -114,16 +130,20 @@ export default function ForumIndexPage({ forums, categories, filters }: ForumInd
                         </div>
                     ) : (
                         <div className="col-span-full rounded-md border p-8 text-center text-muted-foreground">
-                            <p className="font-medium">Tidak ada topik yang ditemukan.</p>
-                            <p className="text-sm">Coba ubah kata kunci pencarian atau filter Anda.</p>
+                            <p className="font-medium">
+                                Tidak ada topik yang ditemukan.
+                            </p>
+                            <p className="text-sm">
+                                Coba ubah kata kunci pencarian atau filter Anda.
+                            </p>
                         </div>
                     )}
                 </section>
-                
+
                 <section className="mt-8 flex justify-center">
                     <Pagination links={forums.links} />
                 </section>
             </main>
-        </Layout>
+        </AppLayout>
     );
 }

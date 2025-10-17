@@ -7,6 +7,7 @@ use App\Models\Collaborator;
 use App\Models\ForumCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CollaborationController extends Controller
@@ -111,7 +112,7 @@ class CollaborationController extends Controller
     public function show(Collaboration $collaboration): \Inertia\Response|\Inertia\ResponseFactory
     {
         $collaboration->load([
-            'category', 
+            'category',
             'user',
             'collaborators.user',
             'chats' => function ($query) {
@@ -209,7 +210,7 @@ class CollaborationController extends Controller
             // Delete old image if exists
             if ($collaboration->image) {
                 $oldImagePath = str_replace('/storage/', '', $collaboration->image);
-                \Storage::disk('public')->delete($oldImagePath);
+                Storage::disk('public')->delete($oldImagePath);
             }
 
             // Store new image
@@ -231,7 +232,7 @@ class CollaborationController extends Controller
         }
 
         $collaboration->load([
-            'category', 
+            'category',
             'user',
             'collaborators.user',
         ]);
@@ -402,11 +403,11 @@ class CollaborationController extends Controller
     {
         // Check if user is owner or admin
         $user = auth()->user();
-        
+
         if (!$user) {
             abort(401, 'Unauthorized');
         }
-        
+
         if ($collaboration->user_id !== $user->id && !$user->hasRole('admin')) {
             abort(403, 'Anda tidak memiliki izin untuk menghapus kolaborasi ini.');
         }

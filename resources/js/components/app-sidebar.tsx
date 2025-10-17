@@ -21,7 +21,8 @@ import {
     TrendingUp,
     Users,
     MessageSquareMore,
-    BellDot
+    BellDot,
+    BriefcaseBusiness
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -32,16 +33,16 @@ const mainNavItems: NavItem[] = [
         href: '/beranda',
         icon: Home,
     },
-    // {
-    //     title: 'Forum',
-    //     href: '/forum',
-    //     icon: Users,
-    // },
-    // {
-    //     title: 'Kolaborasi',
-    //     href: '/kolaborasi',
-    //     icon: BriefcaseBusiness,
-    // },
+    {
+        title: 'Forum',
+        href: '/forum',
+        icon: Users,
+    },
+    {
+        title: 'Kolaborasi',
+        href: '/kolaborasi',
+        icon: BriefcaseBusiness,
+    },
     {
         title: 'Mari Berpikir',
         href: '/mari-berpikir',
