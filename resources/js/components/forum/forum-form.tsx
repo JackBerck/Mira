@@ -63,10 +63,10 @@ export function ForumForm({ categories, initial }: ForumFormProps) {
 
         const formData = {
             ...data,
-            tags: tagsArray, 
+            tags: tagsArray,
         };
 
-        router.post('/forum', formData, {
+        router.post('/beranda/forum', formData, {
             forceFormData: true,
             onStart: () => setIsProcessing(true),
             onFinish: () => setIsProcessing(false),
@@ -110,7 +110,7 @@ export function ForumForm({ categories, initial }: ForumFormProps) {
                             />
                             {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
                         </div>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="image">Gambar Sampul (Opsional)</Label>
                             <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />
@@ -144,7 +144,7 @@ export function ForumForm({ categories, initial }: ForumFormProps) {
                             </Select>
                             {errors.forum_category_id && <p className="text-sm text-red-500">{errors.forum_category_id}</p>}
                         </div>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="tags">Tags (pisahkan dengan koma)</Label>
                             <Input
@@ -176,6 +176,6 @@ export function ForumForm({ categories, initial }: ForumFormProps) {
                     </Button>
                 </div>
         </form>
-        
+
     );
 }

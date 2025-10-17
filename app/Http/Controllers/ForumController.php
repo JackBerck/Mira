@@ -98,7 +98,7 @@ class ForumController extends Controller
             'user_id' => Auth::id()
         ]);
 
-        return redirect()->route('forum.index')->with('success', 'Topik forum berhasil dibuat!');
+        return redirect()->route('dashboard')->with('success', 'Topik forum berhasil dibuat!');
     }
 
     public function show($slug)

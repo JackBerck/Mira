@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CollaborationController;
 use App\Http\Controllers\DirectMessageController;
@@ -59,6 +60,9 @@ Route::prefix('beranda')->middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Admin Report
+    Route::post('/report', [AdminReportController::class, 'store'])->name('admin.report');
+
     Route::get('/pesan', [ChatController::class, 'index'])->name('chats.index');
     Route::post('/pesan', [ChatController::class, 'store'])->name('chats.store');
     Route::get('/pesan/total-unread-count', [ChatController::class, 'getTotalUnreadCount'])->name('chats.total-unread-count');

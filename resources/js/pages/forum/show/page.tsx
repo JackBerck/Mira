@@ -164,7 +164,11 @@ export default function ForumShowPage({
             <div className="mx-auto max-w-4xl px-4 py-8">
                 {/* Back Button */}
                 <Link
-                    href="/forum"
+                    href="#"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        window.history.back();
+                    }}
                     className="mb-6 inline-flex items-center text-sm text-gray-600 transition-colors hover:text-gray-900"
                 >
                     ← Kembali ke Forum

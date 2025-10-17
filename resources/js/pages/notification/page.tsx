@@ -1,11 +1,18 @@
-import AppLayout from '@/layouts/app-layout';
-import { Link, usePage } from '@inertiajs/react';
-import { Bell, CheckCheck, Heart, MessageCircle, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
+import { Link, router, usePage } from '@inertiajs/react';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
+import {
+    Bell,
+    CheckCheck,
+    Heart,
+    Inbox,
+    MessageCircle,
+    Users,
+} from 'lucide-react';
 
 interface Notification {
     id: string;
@@ -62,7 +69,7 @@ function NotificationIcon({ type }: { type: string }) {
 
 function NotificationItem({ notification }: { notification: Notification }) {
     const { data } = notification;
-    
+
     let href = '#';
     if (data.forum_slug) {
         href = `/beranda/forum/${data.forum_slug}`;
@@ -70,47 +77,64 @@ function NotificationItem({ notification }: { notification: Notification }) {
         href = `/beranda/kolaborasi/${data.collaboration_slug}`;
     }
 
-    const avatar = data.liker_avatar || data.commenter_avatar || data.requester_avatar || data.added_by_avatar;
-    const name = data.liker_name || data.commenter_name || data.requester_name || data.added_by_name;
+    const avatar =
+        data.liker_avatar ||
+        data.commenter_avatar ||
+        data.requester_avatar ||
+        data.added_by_avatar;
+    const name =
+        data.liker_name ||
+        data.commenter_name ||
+        data.requester_name ||
+        data.added_by_name;
 
     return (
         <Card
-            className={`p-4 transition-colors hover:bg-muted/50 ${
-                !notification.read_at ? 'border-l-4 border-l-primary bg-primary/5' : ''
+            className={`border-0 shadow-sm transition-all hover:shadow-md ${
+                !notification.read_at
+                    ? 'border-l-4 border-l-primary bg-primary/5'
+                    : ''
             }`}
         >
-            <Link href={href} className="flex gap-4">
-                <div className="flex-shrink-0">
-                    {avatar ? (
-                        <img
-                            src={avatar}
-                            alt={name || 'User'}
-                            className="h-10 w-10 rounded-full object-cover"
-                        />
-                    ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                            <NotificationIcon type={data.type} />
-                        </div>
-                    )}
-                </div>
-                
-                <div className="flex-1 space-y-1">
-                    <p className="text-sm">{data.message}</p>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(notification.created_at), {
-                                addSuffix: true,
-                                locale: id,
-                            })}
-                        </span>
-                        {!notification.read_at && (
-                            <Badge variant="secondary" className="text-xs">
-                                Baru
-                            </Badge>
+            <CardContent className="p-4">
+                <Link href={href} className="flex gap-4">
+                    <div className="flex-shrink-0">
+                        {avatar ? (
+                            <img
+                                src={avatar}
+                                alt={name || 'User'}
+                                className="h-12 w-12 rounded-full object-cover ring-2 ring-background"
+                            />
+                        ) : (
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 ring-2 ring-background">
+                                <NotificationIcon type={data.type} />
+                            </div>
                         )}
                     </div>
-                </div>
-            </Link>
+
+                    <div className="flex-1 space-y-2">
+                        <p className="text-sm leading-relaxed text-foreground">
+                            {data.message}
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(
+                                    new Date(notification.created_at),
+                                    {
+                                        addSuffix: true,
+                                        locale: id,
+                                    },
+                                )}
+                            </span>
+                            {!notification.read_at && (
+                                <Badge variant="default" className="text-xs">
+                                    Baru
+                                </Badge>
+                            )}
+                        </div>
+                    </div>
+                </Link>
+            </CardContent>
         </Card>
     );
 }
@@ -118,48 +142,112 @@ function NotificationItem({ notification }: { notification: Notification }) {
 export default function NotificationPage() {
     const { notifications } = usePage<PageProps>().props;
 
+    const handleMarkAllRead = () => {
+        router.post(
+            '/notifikasi/mark-all-read',
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
+    };
+
+    const unreadCount = notifications.data.filter((n) => !n.read_at).length;
+
     return (
         <AppLayout>
-            <div className="container mx-auto max-w-4xl px-4 py-8">
-                <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-2xl font-semibold">Notifikasi</h1>
-                    {notifications.data.length > 0 && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                        >
-                            <Link
-                                href="/notifikasi/mark-all-read"
-                                method="post"
-                                as="button"
-                            >
-                                <CheckCheck className="mr-2 h-4 w-4" />
-                                Tandai Semua Dibaca
-                            </Link>
-                        </Button>
-                    )}
-                </div>
+            {/* Consistent Layout with Dashboard */}
+            <div className="flex h-full flex-1 flex-col section-padding-x py-8">
+                <div className="container max-w-screen-xl">
+                    {/* Header - Matching Dashboard Style */}
+                    <div className="mb-8 flex items-start justify-between">
+                        <div>
+                            <div className="mb-2 flex items-center gap-3">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                                    <Bell className="h-6 w-6 text-primary" />
+                                </div>
+                                <div>
+                                    <h1 className="text-3xl font-bold tracking-tight">
+                                        Notifikasi
+                                    </h1>
+                                    <p className="text-muted-foreground">
+                                        {unreadCount > 0
+                                            ? `${unreadCount} notifikasi belum dibaca`
+                                            : 'Semua notifikasi telah dibaca'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
-                <div className="space-y-3">
-                    {notifications.data.length === 0 ? (
-                        <Card className="p-12 text-center">
-                            <Bell className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                            <h3 className="text-lg font-semibold">
-                                Tidak ada notifikasi
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                                Anda akan menerima notifikasi di sini
-                            </p>
-                        </Card>
-                    ) : (
-                        notifications.data.map((notification) => (
-                            <NotificationItem
-                                key={notification.id}
-                                notification={notification}
-                            />
-                        ))
-                    )}
+                        {notifications.data.length > 0 && unreadCount > 0 && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleMarkAllRead}
+                                className="gap-2"
+                            >
+                                <CheckCheck className="h-4 w-4" />
+                                Tandai Semua Dibaca
+                            </Button>
+                        )}
+                    </div>
+
+                    {/* Notifications List */}
+                    <div className="space-y-3">
+                        {notifications.data.length === 0 ? (
+                            <Card className="border-0 shadow-sm">
+                                <CardContent className="p-12 text-center">
+                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                                        <Inbox className="h-8 w-8 text-muted-foreground" />
+                                    </div>
+                                    <h3 className="mb-2 text-lg font-semibold text-foreground">
+                                        Tidak ada notifikasi
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        Anda akan menerima notifikasi di sini
+                                        ketika ada aktivitas baru
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <>
+                                {/* Unread Notifications */}
+                                {unreadCount > 0 && (
+                                    <div className="space-y-3">
+                                        <h2 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+                                            Belum Dibaca ({unreadCount})
+                                        </h2>
+                                        {notifications.data
+                                            .filter((n) => !n.read_at)
+                                            .map((notification) => (
+                                                <NotificationItem
+                                                    key={notification.id}
+                                                    notification={notification}
+                                                />
+                                            ))}
+                                    </div>
+                                )}
+
+                                {/* Read Notifications */}
+                                {notifications.data.filter((n) => n.read_at)
+                                    .length > 0 && (
+                                    <div className="mt-6 space-y-3">
+                                        <h2 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+                                            Sudah Dibaca
+                                        </h2>
+                                        {notifications.data
+                                            .filter((n) => n.read_at)
+                                            .map((notification) => (
+                                                <NotificationItem
+                                                    key={notification.id}
+                                                    notification={notification}
+                                                />
+                                            ))}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </AppLayout>

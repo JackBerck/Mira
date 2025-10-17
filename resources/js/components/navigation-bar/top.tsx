@@ -339,7 +339,7 @@ export function TopNavbar() {
                                 </Link>
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem asChild>
+                            {/* <DropdownMenuItem asChild>
                                 <Link
                                     href="/bookmarks"
                                     className="cursor-pointer"
@@ -357,14 +357,14 @@ export function TopNavbar() {
                                     <Settings className="mr-2 h-4 w-4" />
                                     <span>Settings</span>
                                 </Link>
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
 
                             <DropdownMenuSeparator />
 
                             {/* Write Actions */}
                             <DropdownMenuItem asChild>
                                 <Link
-                                    href="/write/forum"
+                                    href="/beranda/forum/buat"
                                     className="cursor-pointer"
                                 >
                                     <MessageCircle className="mr-2 h-4 w-4" />
@@ -374,7 +374,7 @@ export function TopNavbar() {
 
                             <DropdownMenuItem asChild>
                                 <Link
-                                    href="/write/collaboration"
+                                    href="/beranda/forum/buat"
                                     className="cursor-pointer"
                                 >
                                     <User className="mr-2 h-4 w-4" />
