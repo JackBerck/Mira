@@ -129,6 +129,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // forum
 Route::get('forum', [ForumController::class, 'index'])->name('forum.index');
+Route::get('forum/{forum:slug}', [ForumController::class, 'show'])->name('forum.show');
 
 // Collaboration Routes
 Route::get('kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');

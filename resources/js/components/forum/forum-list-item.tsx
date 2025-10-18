@@ -92,7 +92,7 @@ export function ForumListItem({ forum }: { forum: Forum }) {
                     <div className="relative">
                         <Link
                             href={`/beranda/forum/${forum.slug}`}
-                            className="block focus:ring-2 focus:ring-primary focus:outline-none"
+                            className="block"
                         >
                             <div className="flex flex-col gap-3 p-4 md:flex-row">
                                 {/* Left: Image (if exists) */}
