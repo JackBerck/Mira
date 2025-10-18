@@ -66,12 +66,54 @@ class CollaborationController extends Controller
         ]);
     }
 
-    public function create(): \Inertia\Response|\Inertia\ResponseFactory
+    public function create(Request $request): \Inertia\Response|\Inertia\ResponseFactory
     {
         $categories = ForumCategory::all();
+        $finalDraft = null;
+        if($request->has('draftId')) {
+            $draftId = $request->input('draftId');
+            $key = "draft_collab_" . $draftId;
+            $draftData = session()->get($key);
+            if ($draftData) {
+                $description = "";
+                if (!empty($draftData['problem'])) {
+                    $description .= "Masalah yang ingin dipecahkan:\n" . $draftData['problem'] . "\n\n";
+                }
+                if (!empty($draftData['goals'])) {
+                    $description .= "Tujuan Kolaborasi:\n";
+                    foreach ($draftData['goals'] as $goal) {
+                        $description .= "- " . $goal . "\n";
+                    }
+                }
+
+                $allSkills = [];
+                if (!empty($draftData['roles'])) {
+                    foreach ($draftData['roles'] as $role) {
+                        if (!empty($role['skills'])) {
+                            // Gabungkan semua skill dari semua peran
+                            $allSkills = array_merge($allSkills, $role['skills']);
+                        }
+                    }
+                }
+                $skillsString = implode(', ', array_unique($allSkills));
+                $categoryName = $draftData['category'] ?? '';
+                $category = ForumCategory::where('name', $categoryName)->first();
+                $finalDraft = [
+                    'title' => $draftData['title'] ?? '',
+                    'description' => $draftData['description'] ?? $description,
+                    'category_id' => $category ? $category->id : null,
+                    'status' => $draftData['status'] ?? '',
+                    'skills' => $skillsString,
+                    'image' => null, 
+                    'slug' => null,  
+                ];
+                session()->forget($key);
+            }
+        }
 
         return inertia('collaboration/buat/page', [
             'categories' => $categories,
+            'draft' => $finalDraft,
         ]);
     }
 

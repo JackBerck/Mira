@@ -65,10 +65,32 @@ class ForumController extends Controller
         ]);
     }
 
-    public function create(): \Inertia\Response|\Inertia\ResponseFactory
+    public function create(Request $request): \Inertia\Response|\Inertia\ResponseFactory
     {
+        $finalDraft = null;
+        if($request->has('draftId')) {
+            $draftId = $request->input('draftId');
+            $key = "draft_forum_" . $draftId;
+            $draftData = session()->get($key);
+            if ($draftData) {
+                $categoryName = $draftData['category'] ?? '';
+                $category = ForumCategory::where('name', $categoryName)->first();
+
+                $finalDraft = [
+                    'title' => $draftData['title'] ?? '',
+                    'description' => $draftData['content'] ?? ($draftData['summary'] ?? ''), 
+                    'tags' => $draftData['tags'] ?? [],
+                    'forum_category_id' => $category ? $category->id : null, 
+                    'image' => null, 
+                    'slug' => null,  
+                ];
+            session()->forget($key);
+            }
+        }
+
         return Inertia::render('forum/buat/page', [
             'categories' => ForumCategory::all(),
+            'draft' => $finalDraft ?? null,
         ]);
     }
 

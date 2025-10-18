@@ -89,7 +89,7 @@ export default function ForumIndexPage({
                         </p>
                     </div>
                     <Button asChild>
-                        <Link href="/forum/buat">Buat Topik Baru</Link>
+                        <Link href="/beranda/forum/buat">Buat Topik Baru</Link>
                     </Button>
                 </header>
 

@@ -5,10 +5,10 @@ import type { Collab } from './collab-types';
 
 export function CollabCard({ collab }: { collab: Collab }) {
     return (
-        <Card className="h-full border bg-card text-card-foreground">
+        <Card className="overflow-hidden border bg-card text-card-foreground hover:border-primary/50 transition-colors">
             <Link
                 href={`/kolaborasi/${collab.slug}`}
-                className="block rounded-md focus:ring-2 focus:ring-primary focus:outline-none"
+                className="block"
             >
                 <CardHeader className="p-0">
                     <img

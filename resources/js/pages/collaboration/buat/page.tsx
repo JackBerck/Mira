@@ -9,10 +9,17 @@ interface Category {
 
 interface PageProps extends Record<string, unknown> {
     categories: Category[];
+    draft?: {
+        title?: string;
+        description?: string;
+        category_id?: number;
+        image?: string | null;
+        slug?: string;
+    };
 }
 
 export default function NewCollabPage() {
-    const { categories } = usePage<PageProps>().props;
+    const { categories, draft } = usePage<PageProps>().props;
 
     return (
         <AppLayout>
@@ -27,7 +34,7 @@ export default function NewCollabPage() {
                     </p>
                 </header>
                 <section className="max-w-2xl">
-                    <CollabForm categories={categories} />
+                    <CollabForm categories={categories} initial={draft ?? undefined}/>
                 </section>
             </main>
         </AppLayout>

@@ -127,7 +127,7 @@ export default function KolaborasiPage() {
                         </p>
                     </div>
                     <Button asChild>
-                        <Link href="/kolaborasi/buat">Tambah Kolaborasi</Link>
+                        <Link href="/beranda/kolaborasi/buat">Tambah Kolaborasi</Link>
                     </Button>
                 </header>
                 <section

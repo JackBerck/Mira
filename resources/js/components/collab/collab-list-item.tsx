@@ -70,7 +70,7 @@ export function CollabListItem({ collab }: { collab: Collab }) {
                     <div className="relative">
                         <Link
                             href={`/beranda/kolaborasi/${collab.slug}`}
-                            className="block focus:ring-2 focus:ring-primary focus:outline-none"
+                            className="block"
                         >
                             <div className="flex flex-col gap-3 p-4 md:flex-row">
                                 {/* Left: Cover Image (if exists) */}
