@@ -53,7 +53,7 @@ export default function DashboardCollaborations({ collaborations: initialCollabo
 
     const loadMoreCollabs = async () => {
         if (isLoadingCollabs) return;
-        
+
         setIsLoadingCollabs(true);
         const nextPage = collabsPage + 1;
 
@@ -66,7 +66,7 @@ export default function DashboardCollaborations({ collaborations: initialCollabo
                     'X-Inertia-Version': (window as unknown as { appVersion?: string }).appVersion || '',
                 },
             });
-            
+
             if (response.data.props.collaborations) {
                 setCollabs(prev => [...prev, ...response.data.props.collaborations.data]);
                 setCollabsPage(response.data.props.collaborations.current_page);
@@ -90,11 +90,10 @@ export default function DashboardCollaborations({ collaborations: initialCollabo
                     <div className="mb-8 flex items-start justify-between">
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">
-                                Discover
+                                Temukan Kolaborasi
                             </h1>
                             <p className="mt-2 text-muted-foreground">
-                                Explore forums and collaborations from the
-                                community
+                                Jelajahi forum dan kolaborasi dari komunitas kita
                             </p>
                         </div>
                         <Link href="/beranda/kolaborasi/buat">

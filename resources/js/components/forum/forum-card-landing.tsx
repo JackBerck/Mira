@@ -24,7 +24,7 @@ type ForumPost = {
 
 export default function ForumCard({ post }: { post: ForumPost }) {
   return (
-    <Link 
+    <Link
         href={`/forum/${post.slug}`}
         aria-label={`Baca lebih lanjut tentang ${post.title}`}
         className="block rounded-md focus:ring-2 focus:ring-primary focus:outline-none">
@@ -33,7 +33,7 @@ export default function ForumCard({ post }: { post: ForumPost }) {
                     <img
                         src={post.image}
                         alt={`Gambar untuk ${post.title}`}
-                        className="w-full h-40 object-cover" 
+                        className="w-full h-40 object-cover"
                     />
                 )}
 
@@ -44,7 +44,7 @@ export default function ForumCard({ post }: { post: ForumPost }) {
                         </CardTitle>
                     </CardHeader>
 
-                    <CardContent className="p-0 pt-4 flex-grow"> 
+                    <CardContent className="p-0 pt-4 flex-grow">
                         <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="secondary">{post.category.name}</Badge>
                             {(Array.isArray(post.tags) ? post.tags : JSON.parse(post.tags || "[]"))
@@ -58,7 +58,7 @@ export default function ForumCard({ post }: { post: ForumPost }) {
                         <p className="line-clamp-3 text-sm text-muted-foreground mt-3">{post.description}</p>
                     </CardContent>
 
-                    <CardFooter className="p-0 pt-4 mt-auto mb-0"> 
+                    <CardFooter className="p-0 pt-4 mt-auto mb-0">
                         <div className="flex items-center justify-between w-full text-sm text-muted-foreground">
                             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                             <div className="flex items-center gap-3">

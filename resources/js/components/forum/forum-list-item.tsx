@@ -119,7 +119,7 @@ export function ForumListItem({ forum }: { forum: Forum }) {
                                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                             {forum.user.avatar ? (
                                                 <img
-                                                    src={forum.user.avatar}
+                                                    src={forum.user.avatar || '/img/placeholder.png'}
                                                     alt={forum.user.name}
                                                     className="h-4 w-4 rounded-full object-cover"
                                                 />

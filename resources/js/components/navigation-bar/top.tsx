@@ -31,6 +31,7 @@ export function TopNavbar() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const searchRef = useRef<HTMLInputElement>(null);
+    console.log(user)
 
     // Sidebar controls
     const { toggleSidebar, state } = useSidebar();
@@ -299,7 +300,7 @@ export function TopNavbar() {
                             >
                                 <Avatar className="h-9 w-9">
                                     <AvatarImage
-                                        src={user?.avatar_url}
+                                        src={`/storage/${user?.avatar}`}
                                         alt={user?.name || 'User'}
                                     />
                                     <AvatarFallback className="bg-primary text-sm font-medium text-primary-foreground">

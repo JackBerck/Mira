@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
@@ -98,12 +99,19 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
                             <Card className="border-0 shadow-sm">
                                 <CardContent className="p-6 text-center">
                                     <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-2xl font-bold text-white">
-                                        {user?.name
-                                            ?.split(' ')
-                                            .map((n: string) => n[0])
-                                            .join('')
-                                            .toUpperCase()
-                                            .slice(0, 2) || 'U'}
+                                        <Avatar className="h-full w-full">
+                                            <AvatarImage
+                                                src={`/storage/${user.avatar}`}
+                                                alt="Profile"
+                                                className="h-full w-full object-cover"
+                                            />
+                                            <AvatarFallback className="bg-transparent">
+                                                {user.name
+                                                    .split(' ')
+                                                    .map((n: string) => n[0])
+                                                    .join('')}
+                                            </AvatarFallback>
+                                        </Avatar>
                                     </div>
                                     <h3 className="mb-1 font-semibold text-gray-900">
                                         {user?.name || 'User'}

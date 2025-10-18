@@ -45,7 +45,7 @@ export default function Dashboard({ forums: initialForums, sidebar }: DashboardP
 
     const loadMoreForums = async () => {
         if (isLoadingForums) return;
-        
+
         setIsLoadingForums(true);
         const nextPage = forumsPage + 1;
 
@@ -58,7 +58,7 @@ export default function Dashboard({ forums: initialForums, sidebar }: DashboardP
                     'X-Inertia-Version': (window as unknown as { appVersion?: string }).appVersion || '',
                 },
             });
-            
+
             if (response.data.props.forums) {
                 setForums(prev => [...prev, ...response.data.props.forums.data]);
                 setForumsPage(response.data.props.forums.current_page);
@@ -74,17 +74,17 @@ export default function Dashboard({ forums: initialForums, sidebar }: DashboardP
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            
+
             {/* Medium-like Layout with Sidebar */}
             <div className="flex h-full flex-1 flex-col">
                 <div className="mx-auto w-full max-w-7xl px-4 py-8">
                     {/* Header */}
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold tracking-tight">
-                            Discover
+                            Temukan Forum
                         </h1>
                         <p className="mt-2 text-muted-foreground">
-                            Explore forums and collaborations from the community
+                            Jelajahi forum diskusi terbaru dari komunitas kita
                         </p>
                     </div>
 

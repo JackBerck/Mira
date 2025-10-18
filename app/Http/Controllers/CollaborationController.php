@@ -90,7 +90,7 @@ class CollaborationController extends Controller
         // Handle image upload
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $storedPath = $request->file('image')->store('collaborations', 'public');
+            $storedPath = $request->file('image')->store('collaboration_images', 'public');
             $imagePath = '/storage/' . $storedPath;
         }
 
@@ -133,7 +133,7 @@ class CollaborationController extends Controller
                     'user' => [
                         'id' => $collaborator->user->id,
                         'name' => $collaborator->user->name,
-                        'avatar' => $collaborator->user->avatar ? asset('storage/' . $collaborator->user->avatar) : null,
+                        'avatar' => $collaborator->user->image ? asset('storage/' . $collaborator->user->image) : null,
                     ],
                     'joined_at' => $collaborator->created_at->toISOString(),
                 ];
@@ -164,7 +164,7 @@ class CollaborationController extends Controller
             'user' => [
                 'id' => $collaboration->user->id,
                 'name' => $collaboration->user->name,
-                'avatar' => $collaboration->user->avatar ? asset('storage/' . $collaboration->user->avatar): null,
+                'avatar' => $collaboration->user->image ? asset('storage/' . $collaboration->user->image) : null,
                 // 'avatar' => $collaboration->user->image ? asset('storage/' . $collaboration->user->image): null,
             ],
             'collaborators' => $collaboratorsData,
@@ -214,7 +214,7 @@ class CollaborationController extends Controller
             }
 
             // Store new image
-            $imagePath = $request->file('image')->store('collaborations', 'public');
+            $imagePath = $request->file('image')->store('collaboration_images', 'public');
             $validated['image'] = '/storage/' . $imagePath;
         }
 
@@ -411,6 +411,7 @@ class CollaborationController extends Controller
         if ($collaboration->user_id !== $user->id && !$user->hasRole('admin')) {
             abort(403, 'Anda tidak memiliki izin untuk menghapus kolaborasi ini.');
         }
+
 
         $collaboration->delete();
 

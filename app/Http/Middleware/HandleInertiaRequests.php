@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $user = $request->user();
-        
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -49,7 +49,7 @@ class HandleInertiaRequests extends Middleware
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'avatar' => $user->avatar,
+                    'avatar' => $user->image,
                     'email_verified_at' => $user->email_verified_at,
                     'role' => $user->roles->first()?->name ?? null,
                 ] : null,

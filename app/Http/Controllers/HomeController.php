@@ -46,7 +46,7 @@ class HomeController extends Controller
                 'user' => [
                     'id' => $forum->user->id,
                     'name' => $forum->user->name,
-                    'avatar' => $forum->user->avatar ? asset('storage/' . $forum->user->avatar) : null,
+                    'avatar' => $forum->user->image ? asset('storage/' . $forum->user->image) : null,
                 ],
                 'likes_count' => $forum->likes_count,
                 'comments_count' => $forum->comments_count,

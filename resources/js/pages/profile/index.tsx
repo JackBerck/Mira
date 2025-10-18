@@ -31,6 +31,7 @@ export default function Profile({
     status,
     mustVerifyEmail,
 }: ProfileProps) {
+    console.log(user.image)
     const [imagePreview, setImagePreview] = useState<string | null>(
         user.image || null,
     );
@@ -108,7 +109,7 @@ export default function Profile({
                                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-2xl font-bold text-white">
                                     <Avatar>
                                         <AvatarImage
-                                            src={`/storage/profile-images/${imagePreview}`}
+                                            src={`/storage/${imagePreview}`}
                                             alt="Profile"
                                             className="h-full w-full object-cover"
                                         />

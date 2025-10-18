@@ -72,7 +72,7 @@ export default function CollabDetailPage() {
                     <div className="space-y-6 lg:col-span-2">
                         <img
                             src={
-                                collaboration.image || '/kolaborasi-banner.jpg'
+                                collaboration.image ? `storage/${collaboration.image}` : '/img/placeholder.png'
                             }
                             alt={`Banner ${collaboration.title}`}
                             className="h-56 w-full rounded-md object-cover md:h-72"

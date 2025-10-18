@@ -77,7 +77,7 @@ export function CollabListItem({ collab }: { collab: Collab }) {
                                 {collab.coverUrl && (
                                     <div className="flex-shrink-0 md:w-40">
                                         <img
-                                            src={collab.coverUrl}
+                                            src={collab.coverUrl ? `/storage/${collab.coverUrl}` : '/img/placeholder.png'}
                                             alt={`Cover kolaborasi ${collab.title}`}
                                             className="h-24 w-full rounded-md object-cover md:h-28"
                                         />

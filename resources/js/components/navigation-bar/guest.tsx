@@ -41,7 +41,7 @@ export default function GuestNavbar() {
                                 href="/login"
                                 className="relative inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                             >
-                                Join Now
+                                Bergabung Sekarang
                             </Link>
                         </div>
                     </div>
@@ -76,7 +76,7 @@ export default function GuestNavbar() {
                             href="/register"
                             className="block rounded border-l-4 border-transparent bg-blue-600 py-2 pr-4 pl-3 text-base font-medium text-gray-500 text-white hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700"
                         >
-                            Join Now
+                            Bergabung Sekarang
                         </Link>
                     </div>
                 </div>

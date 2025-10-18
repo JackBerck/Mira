@@ -85,7 +85,7 @@ class ForumController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('forums', 'public');
+            $imagePath = $request->file('image')->store('forum_images', 'public');
         }
 
         Forum::create([
@@ -251,7 +251,7 @@ class ForumController extends Controller
             if ($forum->image) {
                 Storage::disk('public')->delete($forum->image);
             }
-            $validated['image'] = $request->file('image')->store('forums', 'public');
+            $validated['image'] = $request->file('image')->store('forum_images', 'public');
         }
 
         $forum->update($validated);
