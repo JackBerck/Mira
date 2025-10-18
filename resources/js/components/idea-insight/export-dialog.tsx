@@ -146,7 +146,7 @@ export default function ExportDialog({ open, onOpenChange, transcript }: Props) 
         current: forum,
       })
       onOpenChange(false)
-      router.visit(`/forum/new?draftId=${id}`)
+      router.visit(`/beranda/forum/buat?draftId=${id}`)
     } catch (error) {
       console.error("Export forum error:", error)
     }
@@ -165,7 +165,7 @@ export default function ExportDialog({ open, onOpenChange, transcript }: Props) 
         current: collab,
       })
       onOpenChange(false)
-      router.visit(`/kolaborasi/new?draftId=${id}`)
+      router.visit(`/beranda/kolaborasi/buat?draftId=${id}`)
     } catch (error) {
       console.error("Export collab error:", error)
     }

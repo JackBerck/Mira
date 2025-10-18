@@ -10,10 +10,19 @@ interface Category {
 
 interface PageProps extends Record<string, unknown> {
     categories: Category[];
+    draft?: { 
+        title?: string;
+        description?: string;
+        forum_category_id?: number;
+        tags?: string[];
+        image?: string | null;
+        slug?: string;
+    };
 }
 
 export default function NewForumPage() {
-    const { categories } = usePage<PageProps>().props;
+    const { categories, draft } = usePage<PageProps>().props;
+
     return (
         <AppLayout>
             <main className="container mx-auto space-y-6 px-12 py-8">
@@ -25,7 +34,7 @@ export default function NewForumPage() {
                     </p>
                 </header>
                 <section className="">
-                    <ForumForm categories={categories} />
+                    <ForumForm categories={categories} initial={draft ?? undefined} />
                 </section>
             </main>
         </AppLayout>

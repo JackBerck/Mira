@@ -42,11 +42,12 @@ export function ForumForm({ categories, initial }: ForumFormProps) {
     const { data, setData, errors } = useForm({
         title: initial?.title ?? '',
         description: initial?.description ?? '',
-        forum_category_id: initial?.forum_category_id ?? categories[0]?.id ?? 0,
+        forum_category_id:
+            initial?.forum_category_id ?? categories[0]?.id ?? 0,
         tags: initial?.tags ?? ([] as string[]),
         image: null as File | null,
     });
-
+    
     const [isProcessing, setIsProcessing] = useState(false);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
